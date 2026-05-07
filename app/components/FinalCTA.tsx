@@ -1,8 +1,15 @@
+"use client";
+
+import { useRef } from "react";
 import { ACCENT } from "./theme";
+import { useParallax } from "./useParallax";
 
 export default function FinalCTA({ accent = ACCENT }: { accent?: string }) {
+  const sectionRef = useRef<HTMLElement>(null);
+  useParallax(sectionRef);
   return (
     <section
+      ref={sectionRef}
       className="reveal ct2u-section"
       style={{
         padding: "160px 32px",
@@ -13,6 +20,7 @@ export default function FinalCTA({ accent = ACCENT }: { accent?: string }) {
     >
       <div
         aria-hidden
+        className="ct2u-drift-y-centered"
         style={{
           position: "absolute",
           bottom: "-40%",
@@ -23,10 +31,14 @@ export default function FinalCTA({ accent = ACCENT }: { accent?: string }) {
           background: `radial-gradient(closest-side, ${accent}24 0%, transparent 70%)`,
           filter: "blur(50px)",
           pointerEvents: "none",
+          willChange: "transform",
         }}
       />
 
-      <div style={{ position: "relative", maxWidth: 880, margin: "0 auto", textAlign: "center" }}>
+      <div
+        className="ct2u-px-rise-fade"
+        style={{ position: "relative", maxWidth: 880, margin: "0 auto", textAlign: "center" }}
+      >
         <p
           className="mono"
           style={{

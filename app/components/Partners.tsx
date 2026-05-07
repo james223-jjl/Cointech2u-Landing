@@ -1,41 +1,48 @@
 "use client";
 
-import { useRef, type MouseEvent } from "react";
+import { useRef } from "react";
 import { ACCENT } from "./theme";
+import { useParallax } from "./useParallax";
 
 const partners = [
-  { name: "OKX", tag: "Spot · Futures", href: "#" },
-  { name: "Bitget", tag: "Copy · Futures", href: "#" },
-  { name: "Bybit", tag: "Derivatives", href: "#" },
-  { name: "Binance", tag: "Spot · Futures", href: "#" },
+  {
+    name: "OKX",
+    tag: "Spot · Futures",
+    href: "https://cointech2u.com/reg-okx",
+    logo: "/logos/okx.svg",
+  },
+  {
+    name: "Bitget",
+    tag: "Copy · Futures",
+    href: "https://cointech2u.com/reg-bitget",
+    logo: "/logos/bitget.svg",
+  },
+  {
+    name: "Bybit",
+    tag: "Derivatives",
+    href: "https://cointech2u.com/reg-bybit",
+    logo: "/logos/bybit.svg",
+  },
+  {
+    name: "Binance",
+    tag: "Spot · Futures",
+    href: "https://cointech2u.com/reg-binance",
+    logo: "/logos/binance.svg",
+  },
 ];
 
 export default function Partners({ accent = ACCENT }: { accent?: string }) {
-  const gridRef = useRef<HTMLDivElement>(null);
-
-  const handleGridMove = (e: MouseEvent<HTMLDivElement>) => {
-    const el = gridRef.current;
-    if (!el) return;
-    const rect = el.getBoundingClientRect();
-    el.style.setProperty("--x", `${e.clientX - rect.left}px`);
-    el.style.setProperty("--y", `${e.clientY - rect.top}px`);
-  };
-
-  const handleCellMove = (e: MouseEvent<HTMLAnchorElement>) => {
-    const el = e.currentTarget;
-    const rect = el.getBoundingClientRect();
-    el.style.setProperty("--mx", `${e.clientX - rect.left}px`);
-    el.style.setProperty("--my", `${e.clientY - rect.top}px`);
-  };
-
+  const sectionRef = useRef<HTMLElement>(null);
+  useParallax(sectionRef);
   return (
     <section
+      ref={sectionRef}
       id="our-partner"
       className="reveal ct2u-section"
       style={{ padding: "120px 32px", borderTop: "1px solid var(--line)" }}
     >
       <div style={{ maxWidth: 1280, margin: "0 auto" }}>
-        <div style={{ textAlign: "center", marginBottom: 56 }}>
+        <div className="ct2u-px-rise-fade" style={{ textAlign: "center", marginBottom: 56 }}>
           <p
             style={{
               fontSize: 12,
@@ -75,63 +82,40 @@ export default function Partners({ accent = ACCENT }: { accent?: string }) {
           </p>
         </div>
 
-        <div
-          id="magnetic-area"
-          ref={gridRef}
-          onMouseMove={handleGridMove}
-          className="ct2u-md-2col ct2u-partner-grid"
-          style={{
-            position: "relative",
-            display: "grid",
-            gridTemplateColumns: "repeat(4, 1fr)",
-            borderTop: "1px solid var(--line)",
-            borderBottom: "1px solid var(--line)",
-          }}
-        >
-          <div className="ct2u-partner-bg-grid" aria-hidden="true" />
+        <div className="ct2u-partner-grid">
           {partners.map((p, i) => (
             <a
               key={p.name}
               href={p.href}
-              data-tilt
-              className="ct2u-partner-cell partner-card"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="ct2u-partner-card"
               data-idx={i}
-              onMouseMove={handleCellMove}
-              style={{
-                padding: "46px 24px",
-                textAlign: "center",
-                borderRight: i < partners.length - 1 ? "1px solid var(--line)" : "none",
-                position: "relative",
-                overflow: "hidden",
-                display: "block",
-              }}
             >
-              <span className="card-glow" aria-hidden="true" />
-              <span className="partner-card-inner">
-                <div
-                  className="partner-card-name"
-                  style={{
-                    fontFamily: "var(--font-inter-tight), sans-serif",
-                    fontSize: 26,
-                    fontWeight: 500,
-                    letterSpacing: "0.02em",
-                    marginBottom: 8,
-                  }}
-                >
-                  {p.name}
-                </div>
-                <div
-                  className="mono"
-                  style={{
-                    fontSize: 11,
-                    letterSpacing: "0.1em",
-                    textTransform: "uppercase",
-                    color: "var(--text-3)",
-                  }}
-                >
-                  {p.tag}
-                </div>
-              </span>
+              <div className="ct2u-partner-card-top">
+                <span className="mono ct2u-partner-card-num">
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                <span className="ct2u-partner-card-arrow" aria-hidden>
+                  <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.6"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M7 17 L17 7" />
+                    <path d="M9 7 H17 V15" />
+                  </svg>
+                </span>
+              </div>
+              <div className="ct2u-partner-card-logo">
+                <img src={p.logo} alt={p.name} loading="lazy" decoding="async" />
+              </div>
+              <div className="mono ct2u-partner-card-tag">{p.tag}</div>
             </a>
           ))}
         </div>

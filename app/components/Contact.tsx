@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { ACCENT } from "./theme";
+import { useParallax } from "./useParallax";
 
 type FieldProps = {
   label: string;
@@ -46,6 +47,8 @@ function Field({ label, placeholder, type = "text", textarea }: FieldProps) {
 
 export default function Contact({ accent = ACCENT }: { accent?: string }) {
   const [submitted, setSubmitted] = useState(false);
+  const sectionRef = useRef<HTMLElement>(null);
+  useParallax(sectionRef);
   const handle = (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitted(true);
@@ -53,6 +56,7 @@ export default function Contact({ accent = ACCENT }: { accent?: string }) {
 
   return (
     <section
+      ref={sectionRef}
       className="reveal ct2u-section"
       style={{ padding: "120px 32px", borderTop: "1px solid var(--line)" }}
     >
@@ -67,7 +71,7 @@ export default function Contact({ accent = ACCENT }: { accent?: string }) {
           alignItems: "flex-start",
         }}
       >
-        <div>
+        <div className="ct2u-px-rise-fade">
           <p
             style={{
               fontSize: 12,

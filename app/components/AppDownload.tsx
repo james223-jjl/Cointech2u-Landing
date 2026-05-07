@@ -1,5 +1,9 @@
+"use client";
+
+import { useRef } from "react";
 import Sparkline from "./Sparkline";
 import { ACCENT } from "./theme";
+import { useParallax } from "./useParallax";
 
 const platforms = [
   { os: "iOS", label: "Coming soon", sub: "Apple App Store" },
@@ -7,8 +11,11 @@ const platforms = [
 ];
 
 export default function AppDownload({ accent = ACCENT }: { accent?: string }) {
+  const sectionRef = useRef<HTMLElement>(null);
+  useParallax(sectionRef);
   return (
     <section
+      ref={sectionRef}
       className="reveal ct2u-section"
       style={{ padding: "120px 32px", borderTop: "1px solid var(--line)" }}
     >
@@ -23,7 +30,7 @@ export default function AppDownload({ accent = ACCENT }: { accent?: string }) {
           alignItems: "center",
         }}
       >
-        <div>
+        <div className="ct2u-px-slide-l">
           <p
             style={{
               fontSize: 12,
@@ -76,7 +83,6 @@ export default function AppDownload({ accent = ACCENT }: { accent?: string }) {
             {platforms.map((p) => (
               <div
                 key={p.os}
-                className="ct2u-platform-card"
                 style={{
                   flex: "1 1 240px",
                   border: "1px solid var(--line)",
@@ -88,10 +94,6 @@ export default function AppDownload({ accent = ACCENT }: { accent?: string }) {
                   alignItems: "center",
                 }}
               >
-                <svg className="ct2u-glow-svg" aria-hidden>
-                  <rect className="ct2u-glow-blur" pathLength={100} />
-                  <rect className="ct2u-glow-stroke" pathLength={100} />
-                </svg>
                 <div
                   aria-hidden
                   style={{

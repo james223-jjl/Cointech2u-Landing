@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Inter_Tight, JetBrains_Mono } from "next/font/google";
 import ScrollReveal from "./components/ScrollReveal";
+import LenisRoot from "./components/LenisRoot";
 import "./globals.css";
 
 const inter = Inter({
@@ -117,6 +118,7 @@ export default function RootLayout({
       className={`${inter.variable} ${interTight.variable} ${jetbrainsMono.variable}`}
     >
       <body>
+        <LenisRoot />
         <ScrollReveal />
         {children}
         <script

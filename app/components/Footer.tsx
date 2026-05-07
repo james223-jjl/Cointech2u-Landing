@@ -19,33 +19,14 @@ export default function Footer() {
         }}
       >
         <div>
-          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 18 }}>
-            <div
-              aria-hidden
-              style={{
-                width: 22,
-                height: 22,
-                borderRadius: 6,
-                background: "linear-gradient(135deg, #E351EE 0%, #8B2BFF 100%)",
-                position: "relative",
-              }}
-            >
-              <div
-                style={{ position: "absolute", inset: 4, borderRadius: 3, background: "#050507" }}
-              />
-              <div
-                style={{ position: "absolute", inset: 7, borderRadius: 2, background: "#E351EE" }}
-              />
-            </div>
-            <span
-              style={{
-                fontFamily: "var(--font-inter-tight), sans-serif",
-                fontSize: 16,
-                fontWeight: 500,
-              }}
-            >
-              CoinTech2u
-            </span>
+          <div style={{ display: "flex", alignItems: "center", marginBottom: 18 }}>
+            <img
+              src="/cointech.svg"
+              alt="CoinTech2u"
+              width={220}
+              height={44}
+              style={{ height: 44, width: "auto", display: "block" }}
+            />
           </div>
           <p
             style={{

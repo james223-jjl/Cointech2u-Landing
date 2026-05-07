@@ -1,4 +1,8 @@
+"use client";
+
+import { useRef } from "react";
 import { ACCENT } from "./theme";
+import { useParallax } from "./useParallax";
 
 const featured = {
   tag: "Featured",
@@ -42,8 +46,11 @@ const posts = [
 ];
 
 export default function Insights({ accent = ACCENT }: { accent?: string }) {
+  const sectionRef = useRef<HTMLElement>(null);
+  useParallax(sectionRef);
   return (
     <section
+      ref={sectionRef}
       className="reveal ct2u-section"
       style={{ padding: "120px 32px", borderTop: "1px solid var(--line)" }}
     >
@@ -58,7 +65,7 @@ export default function Insights({ accent = ACCENT }: { accent?: string }) {
             gap: 20,
           }}
         >
-          <div style={{ maxWidth: 620 }}>
+          <div className="ct2u-px-rise-fade" style={{ maxWidth: 620 }}>
             <p
               style={{
                 fontSize: 12,

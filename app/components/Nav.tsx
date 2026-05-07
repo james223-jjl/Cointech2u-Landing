@@ -79,46 +79,18 @@ export default function Nav({ accent = ACCENT }: { accent?: string }) {
         >
           <a
             href="/"
-            style={{ display: "flex", alignItems: "center", gap: 10 }}
+            style={{ display: "flex", alignItems: "center" }}
             onClick={closeMobile}
+            aria-label="CoinTech2u — home"
           >
-            <div
-              aria-hidden
-              style={{
-                width: 22,
-                height: 22,
-                borderRadius: 6,
-                background: `linear-gradient(135deg, ${accent} 0%, #8B2BFF 100%)`,
-                position: "relative",
-              }}
-            >
-              <div
-                style={{
-                  position: "absolute",
-                  inset: 4,
-                  borderRadius: 3,
-                  background: "#050507",
-                }}
-              />
-              <div
-                style={{
-                  position: "absolute",
-                  inset: 7,
-                  borderRadius: 2,
-                  background: accent,
-                }}
-              />
-            </div>
-            <span
-              style={{
-                fontFamily: "var(--font-inter-tight), sans-serif",
-                fontSize: 16,
-                fontWeight: 500,
-                letterSpacing: "-0.01em",
-              }}
-            >
-              CoinTech2u
-            </span>
+            {/* Brand lockup SVG includes wordmark — no separate text span. */}
+            <img
+              src="/cointech.svg"
+              alt="CoinTech2u"
+              width={220}
+              height={44}
+              style={{ height: 44, width: "auto", display: "block" }}
+            />
           </a>
 
           <div className="ct2u-nav-links">

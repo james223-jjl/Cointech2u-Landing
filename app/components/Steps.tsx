@@ -1,4 +1,8 @@
+"use client";
+
+import { useRef } from "react";
 import { ACCENT } from "./theme";
+import { useParallax } from "./useParallax";
 
 type StepMedia = { type: "gif"; src: string } | { type: "video"; src: string };
 
@@ -33,13 +37,17 @@ const steps: {
 ];
 
 export default function Steps({ accent = ACCENT }: { accent?: string }) {
+  const sectionRef = useRef<HTMLElement>(null);
+  useParallax(sectionRef);
   return (
     <section
+      ref={sectionRef}
       className="reveal ct2u-section"
       style={{ padding: "120px 32px", borderTop: "1px solid var(--line)" }}
     >
       <div style={{ maxWidth: 1280, margin: "0 auto" }}>
         <div
+          className="ct2u-px-rise-fade"
           style={{
             textAlign: "center",
             maxWidth: 720,
@@ -89,33 +97,10 @@ export default function Steps({ accent = ACCENT }: { accent?: string }) {
           </p>
         </div>
 
-        <div
-          className="ct2u-md-stack"
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(3, 1fr)",
-            borderTop: "1px solid var(--line)",
-          }}
-        >
-          {steps.map((s, i) => (
-            <div
-              key={s.num}
-              className="ct2u-step-card"
-              style={{
-                padding: "40px 36px 44px",
-                borderRight: i < 2 ? "1px solid var(--line)" : "none",
-                display: "flex",
-                flexDirection: "column",
-              }}
-            >
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  marginBottom: 36,
-                }}
-              >
+        <div className="ct2u-step-grid">
+          {steps.map((s) => (
+            <article key={s.num} className="ct2u-step-card" tabIndex={0}>
+              <div className="ct2u-step-card-top">
                 <span className="mono" style={{ fontSize: 13, color: accent }}>
                   {s.num}
                 </span>
@@ -131,30 +116,9 @@ export default function Steps({ accent = ACCENT }: { accent?: string }) {
                   {s.kicker}
                 </span>
               </div>
-              <h3
-                style={{
-                  fontSize: 22,
-                  fontWeight: 500,
-                  marginBottom: 14,
-                  letterSpacing: "-0.015em",
-                }}
-              >
-                {s.title}
-              </h3>
-              <p style={{ fontSize: 14.5, color: "var(--text-2)", lineHeight: 1.65, margin: 0 }}>
-                {s.body}
-              </p>
-              <div style={{ height: 32, flexShrink: 0 }} aria-hidden />
-              <div
-                style={{
-                  aspectRatio: "16 / 9",
-                  border: "1px solid var(--line)",
-                  borderRadius: 10,
-                  overflow: "hidden",
-                  background: "#08080B",
-                  marginTop: "auto",
-                }}
-              >
+              <h3 className="ct2u-step-card-title">{s.title}</h3>
+              <p className="ct2u-step-card-body">{s.body}</p>
+              <div className="ct2u-step-card-media">
                 {s.media.type === "video" ? (
                   <video
                     src={s.media.src}
@@ -163,13 +127,6 @@ export default function Steps({ accent = ACCENT }: { accent?: string }) {
                     loop
                     playsInline
                     preload="metadata"
-                    style={{
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "contain",
-                      objectPosition: "center bottom",
-                      display: "block",
-                    }}
                   />
                 ) : (
                   <img
@@ -177,17 +134,10 @@ export default function Steps({ accent = ACCENT }: { accent?: string }) {
                     alt={s.title}
                     loading="lazy"
                     decoding="async"
-                    style={{
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "contain",
-                      objectPosition: "center bottom",
-                      display: "block",
-                    }}
                   />
                 )}
               </div>
-            </div>
+            </article>
           ))}
         </div>
       </div>

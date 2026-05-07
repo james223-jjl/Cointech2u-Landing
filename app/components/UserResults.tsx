@@ -1,5 +1,9 @@
+"use client";
+
+import { useRef } from "react";
 import Sparkline from "./Sparkline";
 import { ACCENT } from "./theme";
+import { useParallax } from "./useParallax";
 
 const bots = [
   { name: "Flash2", profit: "+320.95", id: 120 },
@@ -120,14 +124,17 @@ function BotCard({ bot, accent, seed }: { bot: Bot; accent: string; seed: number
 
 export default function UserResults({ accent = ACCENT }: { accent?: string }) {
   const all = [...bots, ...bots];
+  const sectionRef = useRef<HTMLElement>(null);
+  useParallax(sectionRef);
   return (
     <section
+      ref={sectionRef}
       id="user-result"
       className="reveal ct2u-section-y"
       style={{ padding: "120px 0 120px", borderTop: "1px solid var(--line)" }}
     >
       <div style={{ maxWidth: 1280, margin: "0 auto", padding: "0 32px" }}>
-        <div style={{ textAlign: "center", marginBottom: 56 }}>
+        <div className="ct2u-px-rise-fade" style={{ textAlign: "center", marginBottom: 56 }}>
           <p
             style={{
               fontSize: 12,

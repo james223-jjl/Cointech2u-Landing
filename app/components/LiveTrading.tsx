@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ACCENT } from "./theme";
+import { useParallax } from "./useParallax";
 
 const START = new Date("2022-01-01T00:00:00Z").getTime();
 const INTRO_DURATION_MS = 1500;
@@ -17,44 +18,33 @@ function calcDelta() {
   };
 }
 
-function Tile({ val, label }: { val: number; label: string }) {
+function Tile({
+  val,
+  label,
+  highlight,
+  pad,
+}: {
+  val: number;
+  label: string;
+  highlight?: boolean;
+  pad?: number;
+}) {
   return (
-    <div
-      style={{
-        flex: 1,
-        padding: "28px 12px",
-        textAlign: "center",
-        borderRight: "1px solid var(--line)",
-      }}
-    >
+    <div className="ct2u-counter-tile" tabIndex={0}>
       <div
-        className="mono"
-        style={{
-          fontSize: "clamp(36px, 5vw, 64px)",
-          fontWeight: 500,
-          letterSpacing: "-0.02em",
-          fontVariantNumeric: "tabular-nums",
-          color: "var(--text)",
-        }}
+        className="mono ct2u-counter-tile-num"
+        style={{ color: highlight ? "var(--brand)" : "var(--text)" }}
       >
-        {String(val).padStart(2, "0")}
+        {String(val).padStart(pad ?? 2, "0")}
       </div>
-      <div
-        style={{
-          fontSize: 11,
-          letterSpacing: "0.18em",
-          textTransform: "uppercase",
-          color: "var(--text-3)",
-          marginTop: 6,
-        }}
-      >
-        {label}
-      </div>
+      <div className="ct2u-counter-tile-label">{label}</div>
     </div>
   );
 }
 
 export default function LiveTrading({ accent = ACCENT }: { accent?: string }) {
+  const sectionRef = useRef<HTMLElement>(null);
+  useParallax(sectionRef);
   // Start at zero so the count-up tween has somewhere to come from.
   const [time, setTime] = useState({ d: 0, h: 0, m: 0, s: 0 });
 
@@ -104,12 +94,13 @@ export default function LiveTrading({ accent = ACCENT }: { accent?: string }) {
 
   return (
     <section
+      ref={sectionRef}
       id="trading"
       className="reveal ct2u-section"
       style={{ padding: "120px 32px", borderTop: "1px solid var(--line)", position: "relative" }}
     >
       <div style={{ maxWidth: 1280, margin: "0 auto" }}>
-        <div style={{ textAlign: "center", marginBottom: 50 }}>
+        <div className="ct2u-px-rise-fade" style={{ textAlign: "center", marginBottom: 50 }}>
           <p
             style={{
               fontSize: 12,
@@ -159,56 +150,14 @@ export default function LiveTrading({ accent = ACCENT }: { accent?: string }) {
           </p>
         </div>
 
-        <div
-          className="ct2u-counter-panel"
-          style={{
-            border: "1px solid var(--line)",
-            borderRadius: "var(--radius-lg)",
-            background: "#08080B",
-            overflow: "hidden",
-          }}
-        >
-          <div className="ct2u-tiles-row" style={{ display: "flex" }}>
-            <Tile val={time.d} label="Days" />
+        <div className="ct2u-px-rise">
+          <div className="ct2u-counter-grid">
+            <Tile val={time.d} label="Days" pad={4} />
             <Tile val={time.h} label="Hours" />
             <Tile val={time.m} label="Minutes" />
-            <div style={{ flex: 1, padding: "28px 12px", textAlign: "center" }}>
-              <div
-                className="mono"
-                style={{
-                  fontSize: "clamp(36px, 5vw, 64px)",
-                  fontWeight: 500,
-                  letterSpacing: "-0.02em",
-                  fontVariantNumeric: "tabular-nums",
-                  color: accent,
-                }}
-              >
-                {String(time.s).padStart(2, "0")}
-              </div>
-              <div
-                style={{
-                  fontSize: 11,
-                  letterSpacing: "0.18em",
-                  textTransform: "uppercase",
-                  color: "var(--text-3)",
-                  marginTop: 6,
-                }}
-              >
-                Seconds
-              </div>
-            </div>
+            <Tile val={time.s} label="Seconds" highlight />
           </div>
-          <div
-            style={{
-              padding: "14px 22px",
-              borderTop: "1px solid var(--line)",
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              fontSize: 12,
-              color: "var(--text-3)",
-            }}
-          >
+          <div className="ct2u-counter-meta">
             <span className="mono">START · 2022-01-01 00:00 UTC</span>
             <span style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
               <span

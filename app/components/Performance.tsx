@@ -1,7 +1,12 @@
+"use client";
+
+import { useRef } from "react";
 import Sparkline from "./Sparkline";
 import EquityPercentTicker from "./dashboard/EquityPercentTicker";
 import StatusPill from "./StatusPill";
 import { ACCENT } from "./theme";
+import { useParallax } from "./useParallax";
+import BlurStaggerText from "./BlurStaggerText";
 
 const stats: [string, string, string][] = [
   ["Sharpe ratio", "1.84", "90-day rolling"],
@@ -13,8 +18,11 @@ const stats: [string, string, string][] = [
 ];
 
 export default function Performance({ accent = ACCENT }: { accent?: string }) {
+  const sectionRef = useRef<HTMLElement>(null);
+  useParallax(sectionRef);
   return (
     <section
+      ref={sectionRef}
       className="reveal ct2u-section"
       style={{ padding: "120px 32px", borderTop: "1px solid var(--line)" }}
     >
@@ -58,11 +66,13 @@ export default function Performance({ accent = ACCENT }: { accent?: string }) {
                 marginBottom: 22,
               }}
             >
-              Honest numbers.
+              <BlurStaggerText text="Honest numbers." />
               <br />
-              <span style={{ color: "var(--text-2)", fontStyle: "italic", fontWeight: 400 }}>
-                Updated continuously.
-              </span>
+              <BlurStaggerText
+                text="Updated continuously."
+                startDelay={0.7}
+                style={{ color: "var(--text-2)", fontStyle: "italic", fontWeight: 400 }}
+              />
             </h2>
             <p
               style={{
@@ -93,6 +103,7 @@ export default function Performance({ accent = ACCENT }: { accent?: string }) {
 
           <div>
             <div
+              className="ct2u-px-rise"
               style={{
                 border: "1px solid var(--line)",
                 borderRadius: "var(--radius)",
@@ -149,7 +160,7 @@ export default function Performance({ accent = ACCENT }: { accent?: string }) {
             </div>
 
             <div
-              className="ct2u-md-stack"
+              className="ct2u-md-stack ct2u-px-rise-sm"
               style={{
                 display: "grid",
                 gridTemplateColumns: "repeat(3, 1fr)",
