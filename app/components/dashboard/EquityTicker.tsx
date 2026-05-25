@@ -47,6 +47,7 @@ export default function EquityTicker() {
   return (
     <>
       <div
+        className="ct2u-dash-equity-num"
         style={{
           fontFamily: "var(--font-inter-tight), sans-serif",
           fontSize: 38,
@@ -59,6 +60,7 @@ export default function EquityTicker() {
         <span style={{ color: "var(--text-3)" }}>{cents}</span>
       </div>
       <div
+        className="ct2u-dash-equity-delta"
         style={{
           display: "flex",
           gap: 10,

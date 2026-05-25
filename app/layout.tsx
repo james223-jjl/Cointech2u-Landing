@@ -1,26 +1,37 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Inter_Tight, JetBrains_Mono } from "next/font/google";
+import { Montserrat, Rubik } from "next/font/google";
 import ScrollReveal from "./components/ScrollReveal";
 import LenisRoot from "./components/LenisRoot";
+import { LanguageProvider } from "./lib/i18n";
 import "./globals.css";
 
-const inter = Inter({
+// CSS variables keep their legacy names (`--font-inter`,
+// `--font-inter-tight`, `--font-jetbrains-mono`) so we don't have to rewrite
+// every component and rule that references them. Underlying typefaces:
+//   --font-inter          → Montserrat (body)
+//   --font-inter-tight    → Montserrat (headings — same family, separate
+//                           handle for heading-only weight subset)
+//   --font-jetbrains-mono → Rubik (.mono class — labels, numbers, ticker
+//                           rows). Rubik is proportional, not monospace; the
+//                           .mono CSS rule applies tabular-nums to keep digit
+//                           widths column-aligned where needed.
+const montserratBody = Montserrat({
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700"],
   variable: "--font-inter",
   display: "swap",
 });
 
-const interTight = Inter_Tight({
+const montserratHeading = Montserrat({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
   variable: "--font-inter-tight",
   display: "swap",
 });
 
-const jetbrainsMono = JetBrains_Mono({
+const rubikMono = Rubik({
   subsets: ["latin"],
-  weight: ["400", "500"],
+  weight: ["400", "500", "600", "700"],
   variable: "--font-jetbrains-mono",
   display: "swap",
 });
@@ -115,12 +126,14 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${interTight.variable} ${jetbrainsMono.variable}`}
+      className={`${montserratBody.variable} ${montserratHeading.variable} ${rubikMono.variable}`}
     >
       <body>
-        <LenisRoot />
-        <ScrollReveal />
-        {children}
+        <LanguageProvider>
+          <LenisRoot />
+          <ScrollReveal />
+          {children}
+        </LanguageProvider>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}

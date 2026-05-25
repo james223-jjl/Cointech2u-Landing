@@ -45,9 +45,13 @@ h1, h2, h3, h4 {
   line-height: 1.05;
 }
 
+/* `.mono` is now Rubik (proportional sans), not a true monospace. We force
+   tabular numerals so countdown timers, leaderboard rows, dashboard stats,
+   and ticker labels still column-align cleanly. */
 .mono {
-  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
-  font-feature-settings: 'zero' 1;
+  font-family: var(--font-jetbrains-mono), system-ui, sans-serif;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum' 1;
 }
 
 a { color: inherit; text-decoration: none; }
@@ -129,6 +133,20 @@ body::before {
   .ct2u-md-stack {
     grid-template-columns: 1fr !important;
     gap: 16px !important;
+  }
+  /* FAQ heading column is sticky on desktop; on mobile the grid stacks
+     into one column, so sticky just makes the heading overlap the questions.
+     Also center-align the heading to match the other mobile sections. */
+  .ct2u-faq-aside {
+    position: static !important;
+    top: auto !important;
+    text-align: center;
+    margin-bottom: 24px;
+  }
+  .ct2u-faq-aside > p:last-child {
+    max-width: 480px;
+    margin-left: auto;
+    margin-right: auto;
   }
   .ct2u-md-2col {
     grid-template-columns: 1fr 1fr !important;
@@ -403,6 +421,110 @@ body::before {
   gap: 10px;
   align-items: center;
 }
+
+/* === Language switcher — pill trigger + floating menu =====================
+   Compact globe-icon button with a chevron; opens a small listbox of
+   supported locales. The pill matches the nav's monochrome palette and
+   leans into brand purple only on hover/active to stay quiet at rest. */
+.ct2u-lang {
+  position: relative;
+}
+.ct2u-lang-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 99px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: transparent;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 13px;
+  font-family: inherit;
+  cursor: pointer;
+  transition:
+    color 0.2s ease,
+    border-color 0.2s ease,
+    background 0.2s ease;
+}
+.ct2u-lang-trigger:hover,
+.ct2u-lang-trigger[aria-expanded="true"] {
+  color: rgba(255, 255, 255, 0.95);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+.ct2u-lang-caret {
+  transition: transform 0.25s cubic-bezier(.22, .61, .36, 1);
+}
+
+.ct2u-lang-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 180px;
+  margin: 0;
+  padding: 6px;
+  list-style: none;
+  background: rgba(12, 12, 16, 0.92);
+  backdrop-filter: blur(16px) saturate(140%);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  box-shadow: 0 16px 40px -12px rgba(0, 0, 0, 0.6);
+  z-index: 60;
+  animation: ct2u-lang-in 0.18s cubic-bezier(.22, .61, .36, 1);
+}
+@keyframes ct2u-lang-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.ct2u-lang-menu li { margin: 0; }
+.ct2u-lang-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 9px 12px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-2);
+  font-size: 13.5px;
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: color 0.2s ease, background 0.2s ease;
+}
+.ct2u-lang-item:hover {
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.05);
+}
+.ct2u-lang-item--active {
+  color: var(--text);
+  background: rgba(227, 81, 238, 0.08);
+}
+.ct2u-lang-item--active:hover {
+  background: rgba(227, 81, 238, 0.12);
+}
+
+/* Mobile menu — let the pill sit comfortably above the Log in / Sign up
+   buttons in the slide-out drawer, centred to match their layout. */
+.ct2u-mobile-lang {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 6px;
+}
+.ct2u-mobile-lang .ct2u-lang-menu {
+  right: auto;
+  left: 50%;
+  transform: translateX(-50%);
+}
+@keyframes ct2u-lang-in-mobile {
+  from { opacity: 0; transform: translate(-50%, -4px); }
+  to   { opacity: 1; transform: translate(-50%, 0); }
+}
+.ct2u-mobile-lang .ct2u-lang-menu {
+  animation-name: ct2u-lang-in-mobile;
+}
 .ct2u-nav-link {
   position: relative;
   color: var(--text-2);
@@ -424,27 +546,45 @@ body::before {
 .ct2u-nav-link:hover { color: var(--text); }
 .ct2u-nav-link:hover::after { transform: scaleX(1); }
 
+/* === Nav auth buttons — secondary (ghost) + primary (gradient) ============
+   Log in is a soft pill that picks up tint on hover.
+   Sign up is the visual primary: brand-color gradient, inner highlight, a
+   subtle lift + outer glow on hover, and an arrow that nudges right. */
 .ct2u-nav-login {
+  display: inline-flex;
+  align-items: center;
   font-size: 13.5px;
-  padding: 8px 14px;
-  color: var(--text-2);
-  transition: color 0.2s;
+  font-weight: 500;
+  padding: 8px 16px;
+  border-radius: 99px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.05);
+  text-decoration: none;
+  transition:
+    color 0.25s ease,
+    background 0.25s ease,
+    border-color 0.25s ease;
 }
-.ct2u-nav-login:hover { color: var(--text); }
+.ct2u-nav-login:hover {
+  background: rgba(255, 255, 255, 0.09);
+  border-color: rgba(255, 255, 255, 0.22);
+}
 
 .ct2u-nav-signup {
+  display: inline-flex;
+  align-items: center;
   font-size: 13.5px;
-  padding: 8px 14px;
-  color: var(--text);
-  border: 1px solid var(--line-strong);
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.03);
-  transition: background 0.2s, border-color 0.2s, box-shadow 0.2s;
+  font-weight: 500;
+  padding: 8px 16px;
+  border-radius: 99px;
+  color: #fff;
+  background: var(--brand);
+  text-decoration: none;
+  transition: background 0.2s ease;
 }
 .ct2u-nav-signup:hover {
-  background: rgba(255, 255, 255, 0.06);
-  border-color: rgba(227, 81, 238, 0.4);
-  box-shadow: 0 0 20px rgba(227, 81, 238, 0.18);
+  background: #ec6cf5;
 }
 
 .ct2u-hamburger {
@@ -722,6 +862,9 @@ body::before {
 
 /* === App download phone — slide & defocus on scroll-in === */
 .ct2u-phone {
+  display: block;
+  width: 100%;
+  height: auto;
   filter: blur(10px);
   transform: translateX(100px);
   opacity: 0;
@@ -734,6 +877,90 @@ body::before {
   filter: blur(0);
   transform: translateX(0);
   opacity: 1;
+}
+
+/* === App download phone — "alive" ambient motion ===========================
+   Stage wraps the mockup PNG so we can stack a pulsing halo behind it and a
+   floating live-trading badge in front. The float keyframe gives the device
+   a subtle Y-axis bob (Apple's hero-product motion), the halo breathes in
+   sync, and a green LED dot pulses on the badge so the whole composition
+   reads as "active" without a single moving pixel inside the screenshot. */
+.ct2u-phone-stage {
+  position: relative;
+  max-width: 360px;
+  margin: 0 auto;
+}
+.ct2u-phone-halo {
+  position: absolute;
+  inset: -8% -18%;
+  background: radial-gradient(
+    50% 55% at 50% 55%,
+    rgba(227, 81, 238, 0.4) 0%,
+    rgba(227, 81, 238, 0.12) 35%,
+    transparent 70%
+  );
+  filter: blur(40px);
+  z-index: 0;
+  pointer-events: none;
+  animation: ct2u-phone-halo 7s ease-in-out infinite;
+}
+@keyframes ct2u-phone-halo {
+  0%, 100% { opacity: 0.6; transform: scale(1); }
+  50%      { opacity: 1;   transform: scale(1.06); }
+}
+.ct2u-phone-float {
+  position: relative;
+  z-index: 1;
+  filter:
+    drop-shadow(0 40px 80px rgba(0, 0, 0, 0.6))
+    drop-shadow(0 60px 120px rgba(227, 81, 238, 0.35));
+  animation: ct2u-phone-bob 7s ease-in-out infinite;
+}
+@keyframes ct2u-phone-bob {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50%      { transform: translate3d(0, -8px, 0); }
+}
+
+/* Floating "LIVE TRADING" pill — anchored to the upper-right edge of the
+   phone, slightly outside the frame so it reads as a system-level badge. */
+.ct2u-phone-live {
+  position: absolute;
+  top: 9%;
+  right: -6%;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 11px 6px 9px;
+  border-radius: 99px;
+  background: rgba(8, 8, 11, 0.78);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  color: rgba(255, 255, 255, 0.92);
+  z-index: 2;
+  box-shadow: 0 8px 24px -8px rgba(0, 0, 0, 0.5);
+}
+.ct2u-phone-live-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 99px;
+  background: var(--green);
+  box-shadow: 0 0 10px var(--green);
+  animation: ct2u-phone-live-pulse 1.6s ease-in-out infinite;
+}
+@keyframes ct2u-phone-live-pulse {
+  0%, 100% { opacity: 1;    transform: scale(1); }
+  50%      { opacity: 0.45; transform: scale(0.7); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ct2u-phone-halo,
+  .ct2u-phone-float,
+  .ct2u-phone-live-dot {
+    animation: none;
+  }
 }
 @media (hover: hover) {
   .ct2u-metric-card:hover {
@@ -814,11 +1041,11 @@ body::before {
   .ct2u-drift-y, .ct2u-drift-y-centered { animation: none !important; }
 }
 
-/* === Pinned hero — 3-stage scroll reveal ===
-   Section is 200vh; inner is sticky 100vh. Three stages crossfade based
+/* === Pinned hero — 2-stage scroll reveal ===
+   Section is 150vh; inner is sticky 100vh. Two stages crossfade based
    on `--hp` (0..1) which the Hero JS writes to the section element. */
 .ct2u-hero-pin {
-  min-height: 200vh;
+  min-height: 150vh;
 }
 .ct2u-hero-sticky {
   position: sticky;
@@ -856,18 +1083,59 @@ body::before {
 
 /* Stage opacities are computed in Hero.tsx and written as CSS vars on the
    section element. Fallbacks keep stage 1 visible if JS hasn't run yet. */
-.ct2u-hero-stage-1 { opacity: var(--s1-opacity, 1); }
+/* Both stages default to hidden — they fade in on scroll. The
+   prefers-reduced-motion block below force-overrides to 1 so users
+   with reduced-motion still see the content stacked. */
+.ct2u-hero-stage-1 { opacity: var(--s1-opacity, 0); }
 .ct2u-hero-stage-2 { opacity: var(--s2-opacity, 0); }
-.ct2u-hero-stage-3 { opacity: var(--s3-opacity, 0); }
+
+/* Always-visible bottom CTA — pinned to the bottom of the sticky hero
+   container so it stays in the same spot for the entire pin duration. */
+.ct2u-hero-experience {
+  position: absolute;
+  left: 50%;
+  bottom: clamp(48px, 8vh, 96px);
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  z-index: 3;
+  pointer-events: auto;
+}
+.ct2u-hero-experience-title {
+  font-size: clamp(22px, 2.6vw, 34px);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: rgba(255, 255, 255, 0.96);
+  margin: 0;
+  text-shadow: 0 1px 24px rgba(0, 0, 0, 0.6);
+}
+.ct2u-hero-experience-btn {
+  padding: 14px 26px;
+  border-radius: 10px;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+@media (max-width: 768px) {
+  .ct2u-hero-experience {
+    bottom: 28px;
+    gap: 12px;
+  }
+}
 
 /* Mobile — keep the staged pin scrub, just shorter and tighter.
    Padding/font scaling is handled by clamp() on the inner content. */
 @media (max-width: 768px) {
   .ct2u-hero-pin {
-    /* Shorter pin range so the user doesn't have to swipe a full 2 viewports
-       on a phone to clear the hero — 1.6 viewports is plenty for the 3-stage
+    /* Shorter pin range so the user doesn't have to swipe past a full viewport
+       on a phone to clear the hero — 1.25 viewports is plenty for the 2-stage
        crossfade. */
-    min-height: 160vh;
+    min-height: 125vh;
   }
   .ct2u-hero-stage {
     padding: 0 20px;
@@ -910,9 +1178,14 @@ body::before {
 }
 .ct2u-h1-mask .ct2u-h1-line {
   display: block;
+  /* Padding-bottom must clear the longest descender (g/p/q/y) at the
+     heaviest font weight in use. Inter Tight bold's "g" tail still clipped
+     at 0.20em — bumping to 0.32em is a generous safety margin that holds
+     even if we push the weight further. The matching negative margin keeps
+     line-to-line spacing identical to the no-padding baseline. */
   overflow: hidden;
-  padding-bottom: 0.08em;
-  margin-bottom: -0.08em;
+  padding-bottom: 0.32em;
+  margin-bottom: -0.32em;
   background: inherit;
   -webkit-background-clip: inherit;
   background-clip: inherit;
@@ -1087,29 +1360,39 @@ body::before {
 }
 
 /* === Partner cards — Apple-style 4-card row === */
+/* virtuals.io-style unified frame: a single rounded container that holds all
+   four exchange cells, with thin internal dividers between them rather than
+   individual card chrome. */
 .ct2u-partner-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 14px;
+  gap: 0;
+  background: #0A0A0C;
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  overflow: hidden;
+  isolation: isolate;
 }
 .ct2u-partner-card {
   position: relative;
-  background: #0A0A0C;
-  border: 1px solid var(--line);
-  border-radius: 22px;
-  padding: 32px 28px;
+  background: transparent;
+  border: 0;
+  border-right: 1px solid var(--line);
+  border-radius: 0;
+  padding: 40px 32px;
   display: flex;
   flex-direction: column;
-  min-height: 180px;
+  min-height: 220px;
   text-decoration: none;
   color: inherit;
   overflow: hidden;
   isolation: isolate;
   transition:
-    border-color 0.4s ease,
-    transform 0.45s cubic-bezier(.22,.61,.36,1),
     background 0.4s ease,
     box-shadow 0.45s ease;
+}
+.ct2u-partner-card:last-child {
+  border-right: 0;
 }
 .ct2u-partner-card::before {
   content: "";
@@ -1134,7 +1417,7 @@ body::before {
   justify-content: space-between;
   align-items: center;
   margin-bottom: auto;
-  padding-bottom: 36px;
+  padding-bottom: 44px;
 }
 .ct2u-partner-card-num {
   font-size: 11px;
@@ -1162,8 +1445,8 @@ body::before {
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  margin-bottom: 12px;
-  height: 36px;
+  margin-bottom: 16px;
+  height: 77px;
   filter: brightness(0.92);
   transition: filter 0.4s ease;
 }
@@ -1180,6 +1463,44 @@ body::before {
     filter: brightness(1);
   }
 }
+
+/* Oversized exchange-logo watermark — anchored to the TOP-RIGHT of the card
+   and bleeds past the top + right edges. Larger element + an ellipse mask
+   (taller than wide is squashed) shifted toward the top of the watermark
+   makes the logo prominent up top and fall off rapidly toward the bottom
+   half of the card. The card has overflow: hidden so the bleed gets clipped. */
+.ct2u-partner-card-watermark {
+  position: absolute;
+  top: -45%;
+  right: -30%;
+  width: 110%;
+  height: 160%;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  opacity: 0.12;
+  filter: brightness(1.6) saturate(0.85);
+  -webkit-mask-image: radial-gradient(ellipse 95% 52% at 55% 20%, #000 28%, transparent 80%);
+  mask-image: radial-gradient(ellipse 95% 52% at 55% 20%, #000 28%, transparent 80%);
+  pointer-events: none;
+  z-index: 0;
+  transition: opacity 0.4s ease, filter 0.4s ease, transform 0.5s cubic-bezier(.22,.61,.36,1);
+}
+@media (hover: hover) {
+  .ct2u-partner-card:hover .ct2u-partner-card-watermark,
+  .ct2u-partner-card:focus-visible .ct2u-partner-card-watermark {
+    opacity: 0.2;
+    filter: brightness(1.75) saturate(1);
+    transform: scale(1.05);
+  }
+}
+/* Ensure card content paints above the watermark. */
+.ct2u-partner-card > .ct2u-partner-card-top,
+.ct2u-partner-card > .ct2u-partner-card-logo,
+.ct2u-partner-card > .ct2u-partner-card-tag {
+  position: relative;
+  z-index: 1;
+}
 .ct2u-partner-card-tag {
   font-size: 11px;
   letter-spacing: 0.1em;
@@ -1190,13 +1511,15 @@ body::before {
 @media (hover: hover) {
   .ct2u-partner-card:hover,
   .ct2u-partner-card:focus-visible {
-    border-color: rgba(227, 81, 238, 0.35);
-    transform: translateY(-4px);
-    box-shadow: 0 18px 48px -24px rgba(227, 81, 238, 0.4);
+    background: rgba(227, 81, 238, 0.04);
   }
   .ct2u-partner-card:hover::before,
   .ct2u-partner-card:focus-visible::before {
     opacity: 1;
+  }
+  .ct2u-partner-card:hover .ct2u-partner-card-logo,
+  .ct2u-partner-card:focus-visible .ct2u-partner-card-logo {
+    filter: brightness(1);
   }
   .ct2u-partner-card:hover .ct2u-partner-card-num,
   .ct2u-partner-card:focus-visible .ct2u-partner-card-num {
@@ -1214,14 +1537,27 @@ body::before {
 @media (max-width: 768px) {
   .ct2u-partner-grid {
     grid-template-columns: 1fr 1fr;
+    border-radius: 20px;
   }
   .ct2u-partner-card {
     min-height: 0;
-    padding: 24px 20px;
-    border-radius: 18px;
+    padding: 28px 22px;
+    border-right: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+  }
+  /* In a 2-column layout: clear right border on every 2nd cell, and clear
+     bottom border on the last row (cells 3 + 4 in a 4-cell grid). */
+  .ct2u-partner-card:nth-child(2n) {
+    border-right: 0;
+  }
+  .ct2u-partner-card:nth-last-child(-n+2) {
+    border-bottom: 0;
   }
   .ct2u-partner-card-top {
-    padding-bottom: 24px;
+    padding-bottom: 28px;
+  }
+  .ct2u-partner-card-logo {
+    height: 62px;
   }
 }
 
@@ -1376,6 +1712,8 @@ body::before {
   overflow: visible;
   isolation: isolate;
   gap: 0;
+  /* 3×2 layout for 6 cards (was inheriting 2×2 from .ct2u-strength-grid). */
+  grid-template-columns: 1fr 1fr 1fr;
 }
 .ct2u-strength-card--voronoi {
   /* Frosted-glass surface: 12px backdrop blur + a faint diagonal white
@@ -1411,8 +1749,8 @@ body::before {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: clamp(40px, 4.5vw, 64px);
-  min-height: 320px;
+  padding: clamp(26px, 3vw, 48px);
+  min-height: 248px;
 }
 /* Cursor follow-light — purple radial centred at the cursor's card-local
    position (`--x` / `--y` are written by onMouseMove in CoreStrengths.tsx).
@@ -1532,32 +1870,155 @@ body::before {
     animation: none;
   }
 }
-/* Inner block: hard max-width keeps text away from the diagonal cell edges,
-   while flex centring on the parent puts the block at the cell centroid.
-   Text inside is left-aligned for the orderly hard-edge feel. */
+/* Apple-style content layout — three vertical anchors:
+     [top]    eyebrow (small uppercase label)
+     [middle] hero element (big stat OR big icon)
+     [bottom] caption (single-line short tagline)
+   Centred horizontally, justify-between vertically so each card has the
+   same eyebrow-top / caption-bottom rhythm regardless of focal type. */
 .ct2u-strength-card--voronoi .ct2u-strength-card-content {
-  width: 80%;
-  max-width: 380px;
+  width: 100%;
+  max-width: 320px;
   display: flex;
   flex-direction: column;
-  align-items: stretch;
-  gap: 16px;
-  text-align: left;
-}
-/* Number + icon back to a horizontal row, justify-between — matches the
-   left-aligned content rhythm. */
-.ct2u-strength-card--voronoi .ct2u-strength-card-top {
-  flex-direction: row;
-  justify-content: space-between;
   align-items: center;
-  width: 100%;
-  padding-bottom: 0;
-  margin-bottom: 4px;
+  justify-content: space-between;
+  gap: 10px;
+  text-align: center;
+  min-height: 168px;
 }
-.ct2u-strength-card--voronoi .ct2u-strength-card-title,
-.ct2u-strength-card--voronoi .ct2u-strength-card-desc {
-  text-align: left;
+
+/* Eyebrow — small uppercase category label at the top of the card. */
+.ct2u-strength-card-eyebrow {
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
   margin: 0;
+}
+
+/* Hero — middle row holding either the big stat or the big icon. Flex:1
+   so it takes up the available vertical space and the caption / eyebrow
+   stay anchored to top/bottom. */
+.ct2u-strength-card-hero {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 64px;
+}
+
+/* Stat layout — big number + optional small unit aligned baseline-to-baseline */
+.ct2u-strength-card-stat-row {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+}
+.ct2u-strength-card-stat-big {
+  font-family: var(--font-inter-tight), var(--font-inter), sans-serif;
+  font-size: clamp(34px, 4vw, 52px);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  color: rgba(255, 255, 255, 0.96);
+  font-variant-numeric: tabular-nums;
+}
+.ct2u-strength-card-stat-unit {
+  font-size: clamp(15px, 1.6vw, 20px);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+/* Visual layout — big icon centred. */
+.ct2u-strength-card-icon-big {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.95);
+}
+.ct2u-strength-card-icon-big svg {
+  stroke-width: 1.2;
+}
+
+/* Caption — short tagline anchored to the bottom of the card. */
+.ct2u-strength-card-caption {
+  font-size: 15.5px;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.78);
+  max-width: 30ch;
+  margin: 0;
+}
+
+/* Inline sparkline (used on the "Live performance" card under the stat).
+   Brand-purple gradient stroke, narrow, fills the card width minus a
+   little inset so it visually anchors to the caption row. */
+.ct2u-strength-card-spark {
+  width: 70%;
+  height: 28px;
+  display: block;
+  opacity: 0.85;
+}
+
+/* Single composite exchange watermark (p95 latency card).
+   One PNG centred across the middle band of the card behind the content,
+   with a top-anchored ellipse mask so the image reads bright at the top
+   and fades out toward the bottom — same partner-card watermark feel,
+   just one image instead of four positioned logos. */
+.ct2u-strength-card-bg-logos {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+.ct2u-strength-card-bg-logos img {
+  position: absolute;
+  /* Left-anchored, oversized — image bleeds past the LEFT edge with a
+     significant negative offset and extends far past the right (width
+     150%), so it dominates the card's lower band as a wide horizontal
+     watermark. The card's clip-path naturally crops the bleed. */
+  top: 18%;
+  left: -12%;
+  width: 150%;
+  height: auto;
+  max-height: 78%;
+  object-fit: contain;
+  object-position: left center;
+  display: block;
+  opacity: 0.95;
+  filter: grayscale(0%) brightness(1.2);
+  /* Mask centred toward the LEFT (35% horizontal) since the image is now
+     anchored that side — keeps the brightest fade region over the
+     visible portion of the image instead of out past the right edge. */
+  -webkit-mask-image: radial-gradient(
+    ellipse 75% 65% at 35% 35%,
+    #000 35%,
+    transparent 90%
+  );
+  mask-image: radial-gradient(
+    ellipse 75% 65% at 35% 35%,
+    #000 35%,
+    transparent 90%
+  );
+  transition: opacity 0.45s ease, filter 0.45s ease,
+              transform 0.5s cubic-bezier(.22, .61, .36, 1);
+}
+
+@media (hover: hover) {
+  .ct2u-strength-card:hover .ct2u-strength-card-bg-logos img,
+  .ct2u-strength-card:focus-visible .ct2u-strength-card-bg-logos img {
+    opacity: 0.6;
+    filter: grayscale(0%) brightness(1.1) saturate(1.05);
+    transform: scale(1.04);
+  }
+}
+
+@media (max-width: 768px) {
+  .ct2u-strength-card-bg-logos img {
+    top: 42%;
+    max-height: 50%;
+  }
 }
 /* Spotlight hover: hovering ANY card dims all four to 0.45 opacity + 0.98
    scale + a 2px blur (depth-of-field), so the focus pop is dramatic. The
@@ -1588,6 +2049,29 @@ body::before {
     box-shadow:
       inset 0 1px 0 rgba(255, 255, 255, 0.08),
       inset 1px 0 0 rgba(255, 255, 255, 0.04);
+  }
+}
+
+/* Short-viewport compression — 13"/14" MacBook screens (~800px viewport
+   height) need the 2-row grid + heading to fit on a single screen. Tighten
+   card min-height, padding, and stat size so both rows are above the fold. */
+@media (max-height: 900px) and (min-width: 769px) {
+  .ct2u-strength-card--voronoi {
+    padding: clamp(20px, 2.4vw, 36px);
+    min-height: 216px;
+  }
+  .ct2u-strength-card--voronoi .ct2u-strength-card-content {
+    min-height: 144px;
+    gap: 8px;
+  }
+  .ct2u-strength-card-stat-big {
+    font-size: clamp(30px, 3.4vw, 46px);
+  }
+  .ct2u-strength-card-hero {
+    min-height: 52px;
+  }
+  .ct2u-strength-card-caption {
+    font-size: 14px;
   }
 }
 
@@ -1661,65 +2145,94 @@ body::before {
   border: 1px solid var(--line);
   padding: 6px;
 }
+/* Tab — premium glass-card pattern. At rest each tab reads as a quiet
+   row; the active state lifts via a brand-tinted gradient, hairline
+   highlight border, soft outer bloom, and a 3px vertical accent bar
+   pinned to the left edge. */
 .ct2u-tut-tab {
   position: relative;
   display: block;
   width: 100%;
   text-align: left;
-  padding: 14px 16px 16px;
+  padding: 16px 18px 18px 22px;
   background: transparent;
-  border: none;
-  border-radius: 14px;
+  border: 1px solid transparent;
+  border-radius: 16px;
   color: var(--text);
   cursor: pointer;
   outline: none;
   font: inherit;
   overflow: hidden;
   transition:
-    background 0.4s ease,
-    padding 0.45s cubic-bezier(.22, .61, .36, 1),
-    color 0.3s ease;
+    background 0.35s ease,
+    border-color 0.35s ease,
+    padding 0.4s cubic-bezier(.22, .61, .36, 1),
+    color 0.3s ease,
+    box-shadow 0.35s ease;
 }
 .ct2u-tut-tab:hover {
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(255, 255, 255, 0.025);
+  border-color: rgba(255, 255, 255, 0.05);
 }
 .ct2u-tut-tab:focus-visible {
   outline: 2px solid var(--brand);
   outline-offset: -2px;
 }
 .ct2u-tut-tab--active {
-  /* Dominant active state: brighter glass gradient + extra bottom padding to
-     leave room for the progress bar without crowding the title. */
-  background: linear-gradient(
-    135deg,
-    rgba(227, 81, 238, 0.12),
-    rgba(227, 81, 238, 0.04)
-  );
-  padding: 18px 18px 22px;
+  background:
+    linear-gradient(
+      135deg,
+      rgba(227, 81, 238, 0.12),
+      rgba(227, 81, 238, 0.02) 60%,
+      transparent
+    ),
+    rgba(255, 255, 255, 0.02);
+  border-color: rgba(227, 81, 238, 0.22);
+  padding: 18px 18px 24px 22px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 8px 28px -16px rgba(227, 81, 238, 0.35);
 }
-
 .ct2u-tut-tab-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 }
+/* Step number rendered as a small chip — neutral at rest, brand-coloured
+   on active with a soft outer glow. */
 .ct2u-tut-tab-num {
-  font-size: 11px;
+  display: inline-flex;
+  align-items: center;
+  font-size: 10.5px;
+  font-weight: 600;
   letter-spacing: 0.14em;
   color: var(--text-3);
-  transition: color 0.3s ease;
+  padding: 3px 9px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 99px;
+  background: rgba(255, 255, 255, 0.02);
+  transition:
+    color 0.3s ease,
+    background 0.3s ease,
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
 }
 .ct2u-tut-tab--active .ct2u-tut-tab-num {
-  color: var(--brand);
+  color: #fff;
+  background: linear-gradient(135deg, var(--brand), #8B3FD9);
+  border-color: rgba(227, 81, 238, 0.55);
+  box-shadow: 0 0 16px -4px rgba(227, 81, 238, 0.6);
 }
 .ct2u-tut-tab-now {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  font-size: 10px;
-  letter-spacing: 0.18em;
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
   color: var(--brand);
+  text-transform: uppercase;
 }
 .ct2u-tut-tab-now-dot {
   width: 6px;
@@ -1735,33 +2248,43 @@ body::before {
 }
 
 .ct2u-tut-tab-title {
-  font-size: 14.5px;
+  font-size: 14px;
   font-weight: 500;
-  line-height: 1.35;
+  line-height: 1.4;
+  letter-spacing: -0.005em;
   color: var(--text-2);
-  transition: color 0.3s ease, font-size 0.3s ease;
+  transition: color 0.3s ease, font-size 0.3s ease, font-weight 0.3s ease;
 }
 .ct2u-tut-tab--active .ct2u-tut-tab-title {
-  color: rgba(255, 255, 255, 0.95);
+  color: #fff;
   font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.015em;
 }
 
 /* Progress bar — only present on the active tab. The animation duration
    here is the auto-advance cadence; React listens for animationend to
-   bump to the next step. */
+   bump to the next step. Leading-edge glow gives the bar a more polished
+   moving-light feel. */
 .ct2u-tut-tab-progress {
   position: absolute;
   bottom: 0;
   left: 0;
   right: 0;
   height: 2px;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.04);
   overflow: hidden;
 }
 .ct2u-tut-tab-progress > span {
   display: block;
   height: 100%;
-  background: linear-gradient(90deg, rgba(227, 81, 238, 0.4), var(--brand));
+  background: linear-gradient(
+    90deg,
+    rgba(227, 81, 238, 0.2) 0%,
+    var(--brand) 70%,
+    #f291fa 100%
+  );
+  box-shadow: 0 0 12px rgba(227, 81, 238, 0.55);
   transform: scaleX(0);
   transform-origin: left;
   animation: ct2u-tut-progress 9s linear forwards;
@@ -1774,26 +2297,78 @@ body::before {
   to   { transform: scaleX(1); }
 }
 
-/* — Stage (right column) — */
+/* — Stage (right column) — phone-shaped frame ============================
+   Container is transparent; the phone bezel + glow live on the video element
+   directly so the caption block below (.ct2u-tut-stage-info) sits cleanly
+   outside the frame instead of inside the bezel. `position: relative` here
+   anchors the decorative polygon-mesh backdrop (.ct2u-tut-backdrop) so it
+   fills the stage area behind the phone. */
 .ct2u-tut-stage {
-  border-radius: 18px;
-  border: 1px solid var(--line);
+  position: relative;
+  background: transparent;
+  border: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Polygon-mesh backdrop — sits behind the phone, ignores clicks, scales to
+   fill the column. Edges and nodes are drawn in the inline SVG; the wrapper
+   handles positioning + safe overflow clipping. */
+.ct2u-tut-backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
   overflow: hidden;
-  background: #08080B;
-  box-shadow: 0 0 80px -20px rgba(227, 81, 238, 0.35);
+}
+.ct2u-tut-backdrop svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* Phone + caption sit above the backdrop. */
+.ct2u-tut-stage > .ct2u-tut-stage-video,
+.ct2u-tut-stage > .ct2u-tut-stage-info {
+  position: relative;
+  z-index: 1;
+}
+
+@media (max-width: 768px) {
+  /* Hide the mesh on mobile — the column is too narrow for the lines to
+     read cleanly, and they crowd the phone. */
+  .ct2u-tut-backdrop { display: none; }
 }
 .ct2u-tut-stage-video {
   position: relative;
-  aspect-ratio: 16 / 9;
+  /* Portrait phone aspect — close to a modern device's 9:19.5 screen. */
+  aspect-ratio: 9 / 19;
+  width: 100%;
+  max-width: 340px;
   background: #000;
+  /* Phone-like rounded rectangle. Following the same chrome pattern as the
+     HeroDashboard mockup: visible white hairline border + soft outer ring
+     for the silver-edge highlight + grounding drop shadow with a faint
+     brand-purple bloom underneath. `overflow: hidden` clips the inner
+     video to the rounded corners. */
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 44px;
   overflow: hidden;
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.06),
+    0 30px 80px -20px rgba(0, 0, 0, 0.85),
+    0 80px 200px -40px rgba(227, 81, 238, 0.18);
 }
 .ct2u-tut-video {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  /* `cover` so vertical phone-recorded clips fill the screen edge-to-edge.
+     If a legacy 16:9 clip is supplied it will be cropped centre-wise — swap
+     videos to portrait recordings for the cleanest look. */
+  object-fit: cover;
   display: block;
   transition: opacity 0.45s ease;
 }
@@ -1832,8 +2407,11 @@ body::before {
 }
 
 .ct2u-tut-stage-info {
-  padding: 22px 28px 26px;
-  border-top: 1px solid var(--line);
+  /* Sits below the phone frame now — centered, no top border (the bezel
+     supplies its own visual edge above). */
+  padding: 28px 16px 0;
+  text-align: center;
+  max-width: 520px;
   /* `key` prop on the parent re-mounts this on every step change, so the
      fade-in keyframe re-fires — text feels intentionally swapped. */
   animation: ct2u-tut-info-in 0.5s cubic-bezier(.22, .61, .36, 1);
@@ -1853,8 +2431,7 @@ body::before {
   font-size: 14px;
   color: var(--text-2);
   line-height: 1.65;
-  max-width: 720px;
-  margin: 0;
+  margin: 0 auto;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1871,6 +2448,41 @@ body::before {
   }
   .ct2u-tut-video {
     transition: none;
+  }
+}
+
+/* Short-viewport compression — 13"/14" MacBook screens. The portrait phone
+   stage is already compact; on short screens we shrink the phone slightly
+   and tighten tab + caption padding so the section still fits above the
+   fold. */
+@media (max-height: 900px) and (min-width: 769px) {
+  .ct2u-tut-stage-video {
+    max-width: 280px;
+  }
+  .ct2u-tut-stage-info {
+    padding: 20px 16px 0;
+  }
+  .ct2u-tut-stage-title {
+    font-size: 20px;
+  }
+  .ct2u-tut-stage-desc {
+    font-size: 13.5px;
+    line-height: 1.55;
+  }
+  .ct2u-tut-tab {
+    padding: 11px 14px 13px;
+  }
+  .ct2u-tut-tab--active {
+    padding: 14px 16px 18px;
+  }
+  .ct2u-tut-tab-title {
+    font-size: 13.5px;
+  }
+  .ct2u-tut-tab--active .ct2u-tut-tab-title {
+    font-size: 15px;
+  }
+  .ct2u-tut-tab-row {
+    margin-bottom: 6px;
   }
 }
 
@@ -1910,5 +2522,1240 @@ body::before {
   }
   .ct2u-tut-stage-desc {
     font-size: 13px;
+  }
+}
+
+/* === Leaderboard row — responsive layout =================================
+   Desktop: fixed-width name column + relative-profit bar in the middle +
+   fixed-width amount column on the right.
+   Mobile (≤768px): name column flexes to fill, profit bar is hidden, amount
+   column auto-sizes — same dense layout the leaderboard used before the
+   desktop redesign. */
+.ct2u-lr-name {
+  width: 200px;
+  flex-shrink: 0;
+}
+.ct2u-lr-bar {
+  flex: 1;
+  min-width: 60px;
+}
+.ct2u-lr-amount {
+  width: 110px;
+  text-align: right;
+  flex-shrink: 0;
+}
+@media (max-width: 768px) {
+  .ct2u-lr-name {
+    flex: 1;
+    width: auto;
+  }
+  .ct2u-lr-bar {
+    display: none;
+  }
+  .ct2u-lr-amount {
+    width: auto;
+    text-align: left;
+  }
+}
+
+/* === Announcements row — horizontal cards at bottom of AppDownload ========
+   4 most-recent announcements rendered as cards in a responsive grid below
+   the mobile-app section. Data comes from /api/announcements (Cloudflare
+   Function proxy). Row is hidden if the fetch fails so dev-mode renders
+   without a broken-feeling gap. */
+.ct2u-app-ann {
+  max-width: 1280px;
+  margin: 80px auto 0;
+  padding-top: 48px;
+  border-top: 1px solid var(--line);
+}
+.ct2u-app-ann-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.ct2u-app-ann-eyebrow {
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  margin: 0;
+}
+.ct2u-app-ann-link {
+  font-size: 13px;
+  color: var(--text-2);
+  transition: color 0.2s;
+}
+.ct2u-app-ann-link:hover {
+  color: var(--text);
+}
+/* virtuals.io-style showcase grid — large hero image on top, then title row
+   with arrow button, subtitle, and date. Cards have soft elevation + hover
+   lift; image lightly zooms on hover (Apple-style). */
+.ct2u-app-ann-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+}
+.ct2u-app-ann-card {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: #08080B;
+  overflow: hidden;
+  isolation: isolate;
+  text-decoration: none;
+  color: inherit;
+  transition:
+    transform 0.35s cubic-bezier(.22,.61,.36,1),
+    border-color 0.3s ease,
+    background 0.3s ease,
+    box-shadow 0.35s ease;
+}
+@media (hover: hover) {
+  .ct2u-app-ann-card:hover {
+    border-color: rgba(227, 81, 238, 0.35);
+    transform: translateY(-3px);
+    background: #0B0B10;
+    box-shadow: 0 18px 40px -24px rgba(227, 81, 238, 0.4);
+  }
+}
+
+.ct2u-app-ann-media {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  background: #0F0F14;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.ct2u-app-ann-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.6s cubic-bezier(.22,.61,.36,1);
+}
+@media (hover: hover) {
+  .ct2u-app-ann-card:hover .ct2u-app-ann-media img {
+    transform: scale(1.04);
+  }
+}
+/* Fallback letter mark — shown when the announcement has no image. The
+   gradient is set inline (deterministic per-slug) and we drop a faint white
+   letter on top so the placeholder doesn't read as broken. */
+.ct2u-app-ann-media-mark {
+  font-family: var(--font-inter-tight), sans-serif;
+  font-size: 64px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.18);
+  letter-spacing: -0.04em;
+  user-select: none;
+}
+
+.ct2u-app-ann-body {
+  display: flex;
+  flex-direction: column;
+  padding: 16px 18px 18px;
+  flex: 1;
+}
+.ct2u-app-ann-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+.ct2u-app-ann-title {
+  font-size: 15.5px;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--text);
+  letter-spacing: -0.005em;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.ct2u-app-ann-arrow {
+  flex-shrink: 0;
+  width: 30px;
+  height: 30px;
+  border-radius: 99px;
+  border: 1px solid var(--line);
+  color: var(--text-3);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    color 0.3s ease,
+    border-color 0.3s ease,
+    background 0.3s ease,
+    transform 0.35s cubic-bezier(.22,.61,.36,1);
+}
+@media (hover: hover) {
+  .ct2u-app-ann-card:hover .ct2u-app-ann-arrow {
+    color: var(--brand);
+    border-color: rgba(227, 81, 238, 0.45);
+    background: rgba(227, 81, 238, 0.08);
+    transform: translate(2px, -2px);
+  }
+}
+.ct2u-app-ann-sub {
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--text-2);
+  margin-bottom: 14px;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.ct2u-app-ann-date {
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: var(--text-3);
+  margin-top: auto;
+}
+
+@media (max-width: 900px) {
+  .ct2u-app-ann-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 560px) {
+  .ct2u-app-ann-grid { grid-template-columns: 1fr; }
+  .ct2u-app-ann-media { aspect-ratio: 16 / 9; }
+}
+
+/* === Archive pages (/news, /announcements) — virtuals.io research layout ===
+   Big editorial hero, optional filter chip row, 3-column card grid. Each
+   card is a self-contained tap target with image, tag, title, excerpt, and
+   metadata. Mirrors the rhythm of the home page so the archive doesn't feel
+   like a different site. */
+.ct2u-arch {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 140px 32px 120px;
+}
+/* Subtle "Back" link sitting above the hero — gives users a one-click route
+   home from anywhere on the archive page. Plain anchor (always works, even
+   with JS off); arrow icon nudges left on hover for the "tap-back" cue. */
+.ct2u-arch-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px 8px 11px;
+  margin-bottom: 32px;
+  border: 1px solid var(--line);
+  border-radius: 99px;
+  background: transparent;
+  color: var(--text-2);
+  font-size: 11.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition:
+    color 0.25s ease,
+    border-color 0.25s ease,
+    background 0.25s ease,
+    transform 0.25s cubic-bezier(.22,.61,.36,1);
+}
+.ct2u-arch-back svg {
+  transition: transform 0.25s cubic-bezier(.22,.61,.36,1);
+}
+@media (hover: hover) {
+  .ct2u-arch-back:hover {
+    color: var(--text);
+    border-color: rgba(227, 81, 238, 0.4);
+    background: rgba(227, 81, 238, 0.06);
+  }
+  .ct2u-arch-back:hover svg {
+    transform: translateX(-3px);
+  }
+}
+
+.ct2u-arch-hero {
+  max-width: 880px;
+  margin: 0 auto 64px;
+  text-align: center;
+}
+.ct2u-arch-eyebrow {
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  margin: 0 0 22px;
+}
+.ct2u-arch-title {
+  font-size: clamp(44px, 6vw, 80px);
+  letter-spacing: -0.025em;
+  line-height: 1.05;
+  margin: 0 0 22px;
+  font-weight: 500;
+}
+.ct2u-arch-title-italic {
+  color: var(--text-2);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 0.65em;
+}
+.ct2u-arch-lede {
+  font-size: 17px;
+  color: var(--text-2);
+  line-height: 1.55;
+  max-width: 620px;
+  margin: 0 auto;
+}
+
+/* Filter chip row — small pill buttons; active one picks up brand color. */
+.ct2u-arch-filters {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 auto 56px;
+  max-width: 880px;
+}
+.ct2u-arch-chip {
+  appearance: none;
+  cursor: pointer;
+  padding: 8px 16px;
+  border-radius: 99px;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--text-2);
+  font-size: 11.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  transition:
+    color 0.25s ease,
+    background 0.25s ease,
+    border-color 0.25s ease;
+}
+.ct2u-arch-chip:hover {
+  color: var(--text);
+  border-color: var(--line-strong);
+}
+.ct2u-arch-chip--active {
+  color: var(--text);
+  background: rgba(227, 81, 238, 0.1);
+  border-color: rgba(227, 81, 238, 0.4);
+}
+
+/* Card grid — 3 cols desktop, 2 tablet, 1 mobile. */
+.ct2u-arch-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+@media (max-width: 1024px) {
+  .ct2u-arch-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 640px) {
+  .ct2u-arch-grid { grid-template-columns: 1fr; }
+}
+
+.ct2u-arch-card {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: #08080B;
+  overflow: hidden;
+  isolation: isolate;
+  text-decoration: none;
+  color: inherit;
+  transition:
+    transform 0.35s cubic-bezier(.22,.61,.36,1),
+    border-color 0.3s ease,
+    background 0.3s ease,
+    box-shadow 0.35s ease;
+}
+@media (hover: hover) {
+  .ct2u-arch-card:hover {
+    border-color: rgba(227, 81, 238, 0.35);
+    transform: translateY(-3px);
+    background: #0B0B10;
+    box-shadow: 0 18px 40px -24px rgba(227, 81, 238, 0.4);
+  }
+}
+
+.ct2u-arch-card-media {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  background: #0F0F14;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.ct2u-arch-card-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.6s cubic-bezier(.22,.61,.36,1);
+}
+@media (hover: hover) {
+  .ct2u-arch-card:hover .ct2u-arch-card-media img {
+    transform: scale(1.04);
+  }
+}
+.ct2u-arch-card-mark {
+  font-family: var(--font-inter-tight), sans-serif;
+  font-size: 72px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.18);
+  letter-spacing: -0.04em;
+  user-select: none;
+}
+.ct2u-arch-card-tag {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  padding: 4px 9px;
+  border-radius: 99px;
+  border: 1px solid transparent;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  z-index: 1;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.ct2u-arch-card-body {
+  display: flex;
+  flex-direction: column;
+  padding: 20px 22px 22px;
+  flex: 1;
+}
+.ct2u-arch-card-title {
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--text);
+  letter-spacing: -0.005em;
+  margin: 0 0 10px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.ct2u-arch-card-excerpt {
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--text-2);
+  margin: 0 0 18px;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.ct2u-arch-card-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: var(--text-3);
+  margin-top: auto;
+}
+.ct2u-arch-card-arrow {
+  width: 26px;
+  height: 26px;
+  border-radius: 99px;
+  border: 1px solid var(--line);
+  color: var(--text-3);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    color 0.3s ease,
+    border-color 0.3s ease,
+    background 0.3s ease,
+    transform 0.35s cubic-bezier(.22,.61,.36,1);
+}
+@media (hover: hover) {
+  .ct2u-arch-card:hover .ct2u-arch-card-arrow {
+    color: var(--brand);
+    border-color: rgba(227, 81, 238, 0.45);
+    background: rgba(227, 81, 238, 0.08);
+    transform: translate(2px, -2px);
+  }
+}
+
+.ct2u-arch-empty {
+  text-align: center;
+  font-size: 14px;
+  color: var(--text-3);
+  padding: 64px 0;
+}
+
+/* === Article detail pages — whitepaper.virtuals.io-style long-form ========
+   Narrow centered column, editorial typography, generous white-space.
+   Used by both /news/article/?id=... and /announcements/article/?slug=...
+   Page-level container holds the back link + article; the article itself
+   constrains its own max-width so the page edge breathes. */
+.ct2u-article-page {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 140px 32px 120px;
+}
+.ct2u-article {
+  max-width: 760px;
+  margin: 40px auto 0;
+}
+.ct2u-article-head {
+  margin-bottom: 48px;
+}
+.ct2u-article-tag {
+  font-size: 11.5px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  margin: 0 0 22px;
+}
+.ct2u-article-title {
+  font-size: clamp(34px, 4.6vw, 56px);
+  font-weight: 500;
+  letter-spacing: -0.025em;
+  line-height: 1.1;
+  margin: 0 0 22px;
+}
+.ct2u-article-subtitle {
+  font-size: 18px;
+  line-height: 1.55;
+  color: var(--text-2);
+  margin: 0 0 26px;
+  font-style: italic;
+  font-weight: 400;
+}
+.ct2u-article-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  font-size: 12px;
+  color: var(--text-3);
+  padding-top: 22px;
+  border-top: 1px solid var(--line);
+}
+.ct2u-article-meta a {
+  color: var(--text-3);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+.ct2u-article-meta a:hover {
+  color: var(--text);
+}
+
+.ct2u-article-hero {
+  margin: 0 0 48px;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #0F0F14;
+  border: 1px solid var(--line);
+}
+.ct2u-article-hero img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 480px;
+  object-fit: cover;
+}
+
+/* Prose — typography for the HTML body coming from the API. Closer to the
+   refined, narrow-column feel of a whitepaper than to a marketing page. */
+.ct2u-prose {
+  font-size: 17px;
+  line-height: 1.75;
+  color: var(--text);
+  letter-spacing: -0.003em;
+}
+.ct2u-prose p {
+  margin: 0 0 1.4em;
+  color: var(--text);
+}
+.ct2u-prose p:last-child {
+  margin-bottom: 0;
+}
+.ct2u-prose h2 {
+  font-size: 26px;
+  font-weight: 500;
+  letter-spacing: -0.015em;
+  line-height: 1.25;
+  margin: 2.2em 0 0.7em;
+  color: var(--text);
+}
+.ct2u-prose h3 {
+  font-size: 20px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+  margin: 1.8em 0 0.55em;
+  color: var(--text);
+}
+.ct2u-prose h4 {
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  line-height: 1.35;
+  margin: 1.6em 0 0.5em;
+  color: var(--text);
+}
+.ct2u-prose strong, .ct2u-prose b {
+  color: var(--text);
+  font-weight: 600;
+}
+.ct2u-prose em, .ct2u-prose i {
+  color: var(--text-2);
+}
+.ct2u-prose a {
+  color: var(--brand);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(227, 81, 238, 0.35);
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+.ct2u-prose a:hover {
+  border-bottom-color: var(--brand);
+  color: #f291fa;
+}
+.ct2u-prose ul, .ct2u-prose ol {
+  margin: 0 0 1.4em;
+  padding-left: 1.6em;
+  color: var(--text);
+}
+.ct2u-prose li {
+  margin-bottom: 0.5em;
+}
+.ct2u-prose blockquote {
+  margin: 1.6em 0;
+  padding: 12px 22px;
+  border-left: 3px solid rgba(227, 81, 238, 0.5);
+  background: rgba(227, 81, 238, 0.04);
+  color: var(--text-2);
+  font-style: italic;
+  border-radius: 0 8px 8px 0;
+}
+.ct2u-prose img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-width: 100%;
+  margin: 1.6em auto;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+}
+.ct2u-prose hr {
+  border: 0;
+  border-top: 1px solid var(--line);
+  margin: 2.4em 0;
+}
+.ct2u-prose code {
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 0.9em;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.06);
+  color: #f291fa;
+}
+.ct2u-prose pre {
+  background: #0B0B10;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 16px 18px;
+  overflow-x: auto;
+  margin: 1.6em 0;
+}
+.ct2u-prose pre code {
+  background: none;
+  padding: 0;
+  color: var(--text);
+}
+
+/* Skeleton + empty states */
+.ct2u-article-skel-line {
+  height: 14px;
+  border-radius: 4px;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.04) 0%,
+    rgba(255, 255, 255, 0.09) 50%,
+    rgba(255, 255, 255, 0.04) 100%
+  );
+  background-size: 200% 100%;
+  animation: ct2u-app-ann-shim 1.4s linear infinite;
+}
+.ct2u-article-skel-block {
+  height: 300px;
+  border-radius: 16px;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.04) 0%,
+    rgba(255, 255, 255, 0.07) 50%,
+    rgba(255, 255, 255, 0.04) 100%
+  );
+  background-size: 200% 100%;
+  animation: ct2u-app-ann-shim 1.4s linear infinite;
+}
+.ct2u-article-empty {
+  text-align: center;
+  padding: 60px 0;
+}
+.ct2u-article-empty-body {
+  font-size: 15px;
+  color: var(--text-2);
+  margin: 16px 0 32px;
+  line-height: 1.6;
+}
+@keyframes ct2u-app-ann-shim {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+@media (max-width: 640px) {
+  .ct2u-article-page { padding: 100px 20px 80px; }
+  .ct2u-article-hero { margin-bottom: 32px; }
+  .ct2u-article-head { margin-bottom: 32px; }
+  .ct2u-prose { font-size: 16px; }
+  .ct2u-prose h2 { font-size: 22px; }
+  .ct2u-prose h3 { font-size: 18px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ct2u-article-skel-line,
+  .ct2u-article-skel-block { animation: none; }
+}
+
+@media (max-width: 640px) {
+  .ct2u-arch { padding: 100px 20px 80px; }
+  .ct2u-arch-hero { margin-bottom: 40px; }
+  .ct2u-arch-filters { margin-bottom: 32px; }
+}
+
+/* === Featured slider — Apple-style horizontal carousel ===================
+   Native CSS scroll-snap drives the swipe motion; React tracks the active
+   index off scrollLeft and renders pill pagination + desktop arrows over
+   the top. Each slide is a full-width child of a horizontally-scrolling
+   track. */
+.ct2u-fs {
+  position: relative;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: #08080B;
+  overflow: hidden;
+  isolation: isolate;
+}
+.ct2u-fs-track {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.ct2u-fs-track::-webkit-scrollbar { display: none; }
+.ct2u-fs-slide {
+  flex: 0 0 100%;
+  min-width: 0;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  display: flex;
+  flex-direction: column;
+}
+.ct2u-fs-media {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  background: #000;
+  overflow: hidden;
+}
+.ct2u-fs-media iframe,
+.ct2u-fs-media img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
+}
+/* Anchor that wraps image-slide media so the whole picture is clickable.
+   Positioned absolute inset 0 so it covers the entire .ct2u-fs-media area;
+   sits below the tag pill (which has z-index: 1) so the pill stays visible
+   but the click still goes through to the link everywhere else. */
+.ct2u-fs-media-link {
+  position: absolute;
+  inset: 0;
+  display: block;
+  z-index: 0;
+}
+.ct2u-fs-media img {
+  object-fit: cover;
+  transition: transform 0.8s cubic-bezier(.22,.61,.36,1);
+}
+@media (hover: hover) {
+  .ct2u-fs-slide:hover .ct2u-fs-media img {
+    transform: scale(1.03);
+  }
+}
+.ct2u-fs-tag {
+  position: absolute;
+  top: 18px;
+  left: 18px;
+  padding: 5px 10px;
+  border-radius: 99px;
+  border: 1px solid transparent;
+  font-size: 10.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  pointer-events: none;
+  z-index: 1;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+.ct2u-fs-body {
+  padding: 28px 30px 64px;
+}
+.ct2u-fs-title {
+  font-size: 26px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  margin: 0 0 14px;
+  line-height: 1.2;
+}
+.ct2u-fs-title a {
+  color: inherit;
+  text-decoration: none;
+}
+.ct2u-fs-title a:hover {
+  color: var(--brand);
+}
+.ct2u-fs-excerpt {
+  font-size: 14.5px;
+  color: var(--text-2);
+  line-height: 1.65;
+  margin: 0 0 18px;
+}
+.ct2u-fs-meta {
+  display: flex;
+  gap: 14px;
+  font-size: 12px;
+  color: var(--text-3);
+}
+.ct2u-fs-meta a {
+  color: var(--text-3);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+.ct2u-fs-meta a:hover {
+  color: var(--text);
+}
+
+/* Pill pagination — small dashes at the bottom-center; active one widens
+   and takes the brand accent. Overlaid on the body via absolute position
+   so they sit just above the bottom edge of the card. */
+.ct2u-fs-dots {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 22px;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  z-index: 2;
+}
+.ct2u-fs-dot {
+  appearance: none;
+  border: 0;
+  cursor: pointer;
+  width: 14px;
+  height: 4px;
+  border-radius: 99px;
+  padding: 0;
+  background: rgba(255, 255, 255, 0.18);
+  transition:
+    width 0.35s cubic-bezier(.22,.61,.36,1),
+    background 0.3s ease;
+}
+.ct2u-fs-dot:hover {
+  background: rgba(255, 255, 255, 0.32);
+}
+.ct2u-fs-dot--active {
+  width: 28px;
+}
+
+/* Desktop nav arrows — overlay on the media area, hidden on touch. */
+.ct2u-fs-arrow {
+  position: absolute;
+  top: 28%;
+  width: 40px;
+  height: 40px;
+  border-radius: 99px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: rgba(255, 255, 255, 0.92);
+  cursor: pointer;
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.25s ease, background 0.25s ease, transform 0.25s ease;
+}
+.ct2u-fs-arrow:disabled {
+  opacity: 0 !important;
+  cursor: default;
+  pointer-events: none;
+}
+.ct2u-fs-arrow--prev { left: 16px; }
+.ct2u-fs-arrow--next { right: 16px; }
+@media (hover: hover) {
+  .ct2u-fs:hover .ct2u-fs-arrow { opacity: 1; }
+  .ct2u-fs-arrow:hover {
+    background: rgba(0, 0, 0, 0.75);
+    transform: scale(1.05);
+  }
+}
+@media (hover: none) {
+  .ct2u-fs-arrow { display: none; }
+}
+
+@media (max-width: 768px) {
+  .ct2u-fs-body { padding: 22px 22px 54px; }
+  .ct2u-fs-title { font-size: 20px; }
+  .ct2u-fs-excerpt { font-size: 13.5px; }
+  .ct2u-fs-dots { bottom: 18px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ct2u-fs-track { scroll-behavior: auto; }
+  .ct2u-fs-media img { transition: none; }
+  .ct2u-fs-dot { transition: none; }
+}
+
+/* === Live performance — standalone section after the hero =================
+   Reuses the stage-3 row/caption styles below. Adds its own vertical
+   rhythm now that it's no longer rendered inside the pinned hero. */
+.ct2u-live-performance {
+  padding: clamp(80px, 10vw, 140px) 32px;
+  position: relative;
+}
+@media (max-width: 768px) {
+  .ct2u-live-performance {
+    padding: 64px 20px;
+  }
+}
+
+/* Guard feature cards — Equity Guard + Profit Guard, stacked vertically
+   below the live counter inside the left caption column. Compact size,
+   accent-tinted icon plate, subtle hover lift. */
+.ct2u-guards {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 28px;
+}
+.ct2u-guard-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.025), rgba(255, 255, 255, 0.005));
+  transition:
+    border-color 0.25s ease,
+    transform 0.2s ease,
+    background 0.25s ease,
+    box-shadow 0.25s ease;
+  color: inherit;
+  text-decoration: none;
+}
+.ct2u-guard-card:hover {
+  border-color: rgba(227, 81, 238, 0.32);
+  transform: translateY(-1px);
+  background:
+    linear-gradient(180deg, rgba(227, 81, 238, 0.04), rgba(227, 81, 238, 0.01));
+  box-shadow: 0 10px 24px -16px rgba(227, 81, 238, 0.45);
+}
+.ct2u-guard-card-icon-wrap {
+  flex-shrink: 0;
+  width: 52px;
+  height: 52px;
+  border-radius: 12px;
+  background:
+    radial-gradient(ellipse at 30% 30%, rgba(227, 81, 238, 0.18), rgba(227, 81, 238, 0.04) 70%);
+  border: 1px solid rgba(227, 81, 238, 0.18);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.ct2u-guard-card-icon {
+  width: 32px;
+  height: 32px;
+  display: block;
+}
+.ct2u-guard-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+  flex: 1;
+}
+.ct2u-guard-card-title {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  color: var(--text);
+}
+.ct2u-guard-card-desc {
+  font-size: 11.5px;
+  line-height: 1.4;
+  color: var(--text-2);
+}
+.ct2u-guard-card-arrow {
+  flex-shrink: 0;
+  font-size: 13px;
+  color: var(--text-3);
+  transition: color 0.25s ease, transform 0.25s ease;
+}
+.ct2u-guard-card:hover .ct2u-guard-card-arrow {
+  color: var(--brand);
+  transform: translateX(2px);
+}
+
+/* === Hero stage 3 — caption + phone dashboard side-by-side ===============
+   Caption block sits to the LEFT of the phone-frame dashboard mockup.
+   Stacks on mobile (caption above the dashboard). */
+.ct2u-hero-stage-3-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: clamp(32px, 5vw, 80px);
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 980px;
+  margin: 0 auto;
+}
+.ct2u-hero-stage-3-caption {
+  text-align: left;
+  max-width: 460px;
+}
+.ct2u-hero-stage-3-eyebrow {
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--brand);
+  margin: 0 0 22px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.ct2u-hero-stage-3-eyebrow-rule {
+  display: inline-block;
+  width: 24px;
+  height: 1px;
+  background: var(--brand);
+}
+.ct2u-hero-stage-3-title {
+  font-size: clamp(40px, 5vw, 68px);
+  letter-spacing: -0.025em;
+  line-height: 1.05;
+  margin: 0;
+}
+.ct2u-hero-stage-3-title-italic {
+  color: var(--text-2);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 0.65em;
+}
+.ct2u-hero-stage-3-dash {
+  flex-shrink: 0;
+}
+@media (max-width: 768px) {
+  .ct2u-hero-stage-3-row {
+    grid-template-columns: 1fr;
+    gap: 24px;
+    text-align: center;
+  }
+  .ct2u-hero-stage-3-caption {
+    max-width: none;
+    text-align: center;
+  }
+  .ct2u-hero-stage-3-eyebrow {
+    justify-content: center;
+  }
+}
+
+/* Compact variant — same Apple-style boxes as the original counter, but
+   tighter padding + smaller digits so all four tiles fit cleanly inside
+   the stage-3 caption column. The Days tile is featured (2× width + bigger
+   digit + brand tint) since "uptime in days" is the headline stat. */
+.ct2u-counter-grid--compact {
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 8px;
+  margin-top: 28px;
+}
+.ct2u-counter-grid--compact .ct2u-counter-tile {
+  padding: 16px 8px;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.ct2u-counter-grid--compact .ct2u-counter-tile-num {
+  font-size: clamp(22px, 2.6vw, 30px);
+}
+.ct2u-counter-grid--compact .ct2u-counter-tile-label {
+  font-size: 9.5px;
+  margin-top: 8px;
+}
+
+/* Featured (Days) — hero-stat treatment. Brand-purple tint layered OVER an
+   opaque dark base so no part of the tile is translucent (otherwise the
+   hero video bleeds through the lighter corner of the gradient). */
+.ct2u-counter-grid--compact .ct2u-counter-tile--featured {
+  background-color: #0A0A0C;
+  background-image: linear-gradient(
+    135deg,
+    rgba(227, 81, 238, 0.22),
+    transparent 70%
+  );
+  border-color: rgba(227, 81, 238, 0.28);
+  padding: 16px 14px;
+}
+.ct2u-counter-grid--compact .ct2u-counter-tile--featured .ct2u-counter-tile-num {
+  font-size: clamp(32px, 4vw, 46px);
+  letter-spacing: -0.025em;
+}
+.ct2u-counter-grid--compact .ct2u-counter-tile--featured .ct2u-counter-tile-label {
+  color: var(--brand);
+  letter-spacing: 0.22em;
+  margin-top: 10px;
+}
+
+@media (max-width: 768px) {
+  .ct2u-counter-grid--compact {
+    margin-top: 22px;
+  }
+}
+/* Tight phone widths — the 2:1:1:1 grid leaves the last two tiles too
+   cramped under ~360px. Drop to a 2-row layout: featured Days tile on
+   top, then 3 small tiles below. */
+@media (max-width: 420px) {
+  .ct2u-counter-grid--compact {
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 6px;
+  }
+  .ct2u-counter-grid--compact .ct2u-counter-tile--featured {
+    grid-column: 1 / -1;
+  }
+  .ct2u-counter-grid--compact .ct2u-counter-tile--featured .ct2u-counter-tile-num {
+    font-size: 36px;
+  }
+}
+
+/* === HeroDashboard — phone-frame mockup (vertical, always) ================
+   Renders the dashboard as a portrait phone-shaped panel at every viewport.
+   Constrains the panel width, stacks the equity row, halves the sparkline,
+   collapses the KPI tiles to a 2×2 grid, and folds the strategy table down
+   to two columns (symbol + pnl). */
+
+.ct2u-dash {
+  max-width: 380px;
+  margin: 0 auto;
+  border-radius: 28px;
+}
+.ct2u-dash-topbar {
+  padding: 10px 14px !important;
+}
+.ct2u-dash-url {
+  font-size: 10px !important;
+  max-width: 55%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Equity row stacks vertically and timeframe pills sit under the number. */
+.ct2u-dash-equity-row {
+  flex-direction: column !important;
+  align-items: stretch !important;
+  padding: 18px 18px 14px !important;
+  gap: 12px !important;
+}
+.ct2u-dash-equity-label {
+  font-size: 10.5px !important;
+  margin-bottom: 6px !important;
+}
+.ct2u-dash-equity-num {
+  font-size: 30px !important;
+}
+.ct2u-dash-equity-delta {
+  font-size: 11px !important;
+  margin-top: 4px !important;
+}
+/* Keep only 1D / 1W / 1M — the rest don't fit on a phone-width row. */
+.ct2u-dash-tf > *:nth-child(n + 4) {
+  display: none;
+}
+.ct2u-dash-tf > * {
+  font-size: 10.5px !important;
+  padding: 4px 9px !important;
+}
+
+.ct2u-dash-spark {
+  height: 120px !important;
+}
+
+/* KPI tiles → 2×2 grid (override the desktop 1×4 flex row). */
+.ct2u-dash-kpis {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+}
+.ct2u-dash-kpis > div {
+  flex: none !important;
+  padding: 12px 14px !important;
+  border-right: none !important;
+  border-bottom: 1px solid var(--line);
+}
+.ct2u-dash-kpis > div:nth-child(odd) {
+  border-right: 1px solid var(--line) !important;
+}
+.ct2u-dash-kpis > div:nth-last-child(-n + 2) {
+  border-bottom: none;
+}
+.ct2u-dash-kpis > div > div:first-child {
+  font-size: 9.5px !important;
+}
+.ct2u-dash-kpis > div > div:nth-child(2) {
+  font-size: 16px !important;
+}
+.ct2u-dash-kpis > div > div:last-child {
+  font-size: 10px !important;
+}
+
+/* Strategy rows: 2 columns (symbol + pnl); strategy + size hidden. */
+.ct2u-dash-strategies {
+  padding: 12px 16px 16px !important;
+}
+.ct2u-dash-strategies .ct2u-md-row-2col {
+  grid-template-columns: 1fr auto !important;
+  padding: 8px 0 !important;
+  font-size: 12.5px !important;
+}
+.ct2u-dash-strategies .ct2u-md-row-2col > *:nth-child(2),
+.ct2u-dash-strategies .ct2u-md-row-2col > *:nth-child(3) {
+  display: none !important;
+}
+
+/* On the narrowest phones, drop the URL string from the topbar. */
+@media (max-width: 420px) {
+  .ct2u-dash-url {
+    display: none;
   }
 }

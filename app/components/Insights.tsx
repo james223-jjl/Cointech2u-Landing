@@ -1,56 +1,55 @@
 "use client";
 
 import { useRef } from "react";
+import AnnouncementsRow from "./AnnouncementsRow";
+import FeaturedSlider from "./FeaturedSlider";
+import { useT } from "../lib/i18n";
+import { CURATED_NEWS } from "../lib/news";
 import { ACCENT } from "./theme";
 import { useParallax } from "./useParallax";
 
-const featured = {
-  tag: "Featured",
-  title: "CoinTech2u at Coinfest Asia 2024 — highlights and innovations",
-  excerpt:
-    "Recap of our keynote on adaptive execution infrastructure, on-stage demos with partner exchanges, and what shipped after the event.",
-  date: "Apr 18, 2026",
-  read: "6 min read",
+type Post = {
+  tag: string;
+  title: string;
+  date: string;
+  read: string;
+  href: string;
 };
-const posts = [
-  {
-    tag: "Listings",
-    title: "Coinbase to list CHIP for spot trading",
-    date: "Apr 21, 2026",
-    read: "2 min",
-  },
-  {
-    tag: "Macro",
-    title: "Markets rebound: what surprised analysts this quarter",
-    date: "Apr 21, 2026",
-    read: "4 min",
-  },
-  {
-    tag: "DEX",
-    title: "Arkham launches a decentralized exchange feature",
-    date: "Apr 21, 2026",
-    read: "3 min",
-  },
-  {
-    tag: "Stablecoins",
-    title: "Tempo partners with DoorDash on stablecoin-based driver rewards",
-    date: "Apr 21, 2026",
-    read: "3 min",
-  },
-  {
-    tag: "Derivatives",
-    title: "CHIP perpetuals on Binance convert to traditional futures",
-    date: "Apr 20, 2026",
-    read: "2 min",
-  },
-];
+
+function readTime(html: string | undefined, fallback: string): string {
+  const source = html || fallback;
+  const text = source.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+  const words = text ? text.split(" ").length : 0;
+  // Floor ~220 wpm; assume 1 min minimum so the row never reads "0 min".
+  const min = Math.max(1, Math.ceil(words / 220));
+  return `${min} min`;
+}
+
+function formatNewsDate(iso: string): string {
+  const d = new Date(iso.replace(" ", "T"));
+  if (Number.isNaN(d.getTime())) return iso;
+  return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+}
 
 export default function Insights({ accent = ACCENT }: { accent?: string }) {
+  const t = useT();
   const sectionRef = useRef<HTMLElement>(null);
   useParallax(sectionRef);
+
+  // Top 5 of the same curated MyCoinDeck index the /news/ page renders, so
+  // the homepage rail and the archive stay in sync. Each row links into the
+  // internal article detail page.
+  const posts: Post[] = CURATED_NEWS.slice(0, 5).map((n) => ({
+    tag: n.tag,
+    title: n.title,
+    date: formatNewsDate(n.date),
+    read: readTime(n.body, n.framing),
+    href: `/news/article/?id=${n.id}`,
+  }));
   return (
     <section
       ref={sectionRef}
+      id="insights"
       className="reveal ct2u-section"
       style={{ padding: "120px 32px", borderTop: "1px solid var(--line)" }}
     >
@@ -65,7 +64,7 @@ export default function Insights({ accent = ACCENT }: { accent?: string }) {
             gap: 20,
           }}
         >
-          <div className="ct2u-px-rise-fade" style={{ maxWidth: 620 }}>
+          <div style={{ maxWidth: 620 }}>
             <p
               style={{
                 fontSize: 12,
@@ -86,27 +85,27 @@ export default function Insights({ accent = ACCENT }: { accent?: string }) {
                   marginRight: 10,
                 }}
               />
-              Insights, News &amp; Market Updates
+              {t("insights.eyebrow")}
             </p>
             <h2
               style={{
-                fontSize: "clamp(34px, 4vw, 52px)",
+                fontSize: "clamp(44px, 5.5vw, 72px)",
                 letterSpacing: "-0.025em",
                 marginBottom: 18,
               }}
             >
-              Discover trends.
+              {t("insights.title.line1")}
               <br />
-              <span style={{ color: "var(--text-2)", fontStyle: "italic", fontWeight: 400 }}>
-                Learn from data. Stay ahead.
+              <span style={{ color: "var(--text-2)", fontStyle: "italic", fontWeight: 400, fontSize: "0.65em" }}>
+                {t("insights.title.line2")}
               </span>
             </h2>
             <p style={{ fontSize: 16, color: "var(--text-2)", lineHeight: 1.6 }}>
-              Research notes, market briefings, and product updates from the CoinTech2u team.
+              {t("insights.lede")}
             </p>
           </div>
           <a
-            href="#"
+            href="/news/"
             style={{
               padding: "10px 16px",
               borderRadius: 8,
@@ -118,7 +117,7 @@ export default function Insights({ accent = ACCENT }: { accent?: string }) {
               gap: 8,
             }}
           >
-            View all articles <span style={{ opacity: 0.4 }}>→</span>
+            {t("common.viewAllArticles")} <span style={{ opacity: 0.4 }}>→</span>
           </a>
         </div>
 
@@ -131,107 +130,7 @@ export default function Insights({ accent = ACCENT }: { accent?: string }) {
             marginBottom: 24,
           }}
         >
-          <a
-            href="#"
-            style={{
-              display: "block",
-              border: "1px solid var(--line)",
-              borderRadius: "var(--radius-lg)",
-              background: "#08080B",
-              overflow: "hidden",
-              transition: "transform 0.25s ease, border-color 0.25s ease",
-            }}
-          >
-            <div
-              style={{
-                aspectRatio: "16 / 9",
-                position: "relative",
-                background: `linear-gradient(135deg, #0E0E12 0%, #1a0a1f 60%, ${accent}22 100%)`,
-                overflow: "hidden",
-              }}
-            >
-              <div
-                aria-hidden
-                style={{
-                  position: "absolute",
-                  inset: 0,
-                  backgroundImage:
-                    "linear-gradient(to right, rgba(255,255,255,0.04) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.04) 1px, transparent 1px)",
-                  backgroundSize: "40px 40px",
-                  maskImage:
-                    "radial-gradient(ellipse at 70% 50%, black 20%, transparent 70%)",
-                  WebkitMaskImage:
-                    "radial-gradient(ellipse at 70% 50%, black 20%, transparent 70%)",
-                }}
-              />
-              <div
-                style={{
-                  position: "absolute",
-                  top: 18,
-                  left: 18,
-                  padding: "5px 10px",
-                  borderRadius: 99,
-                  background: "rgba(227,81,238,0.12)",
-                  border: "1px solid rgba(227,81,238,0.3)",
-                  color: accent,
-                  fontSize: 10.5,
-                  fontFamily: "var(--font-jetbrains-mono), monospace",
-                  letterSpacing: "0.1em",
-                  textTransform: "uppercase",
-                }}
-              >
-                {featured.tag}
-              </div>
-              <div
-                aria-hidden
-                style={{
-                  position: "absolute",
-                  bottom: 0,
-                  left: 0,
-                  right: 0,
-                  height: "50%",
-                  background: "linear-gradient(to bottom, transparent, #08080B)",
-                }}
-              />
-            </div>
-            <div style={{ padding: "28px 30px 32px" }}>
-              <h3
-                style={{
-                  fontSize: 26,
-                  fontWeight: 500,
-                  letterSpacing: "-0.02em",
-                  marginBottom: 14,
-                  lineHeight: 1.2,
-                }}
-              >
-                {featured.title}
-              </h3>
-              <p
-                style={{
-                  fontSize: 14.5,
-                  color: "var(--text-2)",
-                  lineHeight: 1.65,
-                  margin: 0,
-                  marginBottom: 18,
-                }}
-              >
-                {featured.excerpt}
-              </p>
-              <div
-                style={{
-                  display: "flex",
-                  gap: 14,
-                  fontSize: 12,
-                  color: "var(--text-3)",
-                  fontFamily: "var(--font-jetbrains-mono), monospace",
-                }}
-              >
-                <span>{featured.date}</span>
-                <span>·</span>
-                <span>{featured.read}</span>
-              </div>
-            </div>
-          </a>
+          <FeaturedSlider accent={accent} />
 
           <div
             style={{
@@ -260,7 +159,7 @@ export default function Insights({ accent = ACCENT }: { accent?: string }) {
                   color: "var(--text-3)",
                 }}
               >
-                Latest market updates
+                {t("insights.rail.title")}
               </span>
               <span
                 style={{
@@ -287,8 +186,8 @@ export default function Insights({ accent = ACCENT }: { accent?: string }) {
             <div style={{ flex: 1 }}>
               {posts.map((p, i) => (
                 <a
-                  key={p.title}
-                  href="#"
+                  key={`${p.title}-${i}`}
+                  href={p.href}
                   style={{
                     display: "block",
                     padding: "18px 22px",
@@ -368,6 +267,8 @@ export default function Insights({ accent = ACCENT }: { accent?: string }) {
             ),
           )}
         </div>
+
+        <AnnouncementsRow accent={accent} />
       </div>
     </section>
   );

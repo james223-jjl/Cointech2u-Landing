@@ -1,26 +1,69 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useT } from "../lib/i18n";
+import LanguageSwitcher from "./LanguageSwitcher";
 import { ACCENT } from "./theme";
 
-const links: [string, string][] = [
-  ["Live Trading", "#trading"],
-  ["User Results", "#user-result"],
-  ["Core Strengths", "#core-strengths"],
-  ["Our Partners", "#our-partner"],
-  ["FAQ", "#faq"],
+// Translation keys for nav labels — resolved at render via the i18n hook
+// so the bar swaps language live without remounting.
+const navItems: { key: string; href: string }[] = [
+  { key: "nav.liveTrading", href: "/#trading" },
+  { key: "nav.userResults", href: "/#user-result" },
+  { key: "nav.coreStrengths", href: "/#core-strengths" },
+  { key: "nav.ourPartners", href: "/#our-partner" },
+  { key: "nav.news", href: "/#insights" },
+  { key: "nav.faq", href: "/#faq" },
 ];
 
 export default function Nav({ accent = ACCENT }: { accent?: string }) {
+  const t = useT();
   const [scrolled, setScrolled] = useState(false);
+  const [hidden, setHidden] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
+  // virtuals.io-style scroll behavior:
+  //   • Show nav at the very top of the page (no hide threshold reached yet)
+  //   • Hide when the user scrolls DOWN past ~80px
+  //   • Show again the moment they scroll UP, even mid-page
+  //   • A small delta (4px) suppresses jitter from inertial scroll wobble
+  // Uses a ref-style closure variable (`lastY`) instead of useState so the
+  // scroll handler doesn't trigger React re-renders on every wheel tick.
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 8);
-    onScroll();
+    let lastY = window.scrollY;
+    let raf = 0;
+    const DELTA = 4;
+    const HIDE_AFTER = 80;
+
+    const update = () => {
+      const y = window.scrollY;
+      setScrolled(y > 8);
+      const diff = y - lastY;
+      if (Math.abs(diff) > DELTA) {
+        if (diff > 0 && y > HIDE_AFTER) {
+          setHidden(true); // scrolling down past threshold
+        } else if (diff < 0) {
+          setHidden(false); // any upward scroll
+        }
+        lastY = y;
+      }
+    };
+
+    const onScroll = () => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(update);
+    };
+
+    update();
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      cancelAnimationFrame(raf);
+    };
   }, []);
+
+  // Mobile menu open always forces nav visible — can't hide the close button.
+  const isHidden = hidden && !mobileOpen;
 
   // Lock body scroll while mobile menu is open.
   useEffect(() => {
@@ -62,7 +105,13 @@ export default function Nav({ accent = ACCENT }: { accent?: string }) {
           borderBottom: scrolled
             ? "1px solid var(--line)"
             : "1px solid transparent",
-          transition: "all 0.3s ease",
+          // Slide the bar off-canvas when hidden. Separate transition speeds
+          // for transform vs the chrome props so the slide feels snappy
+          // while the blur/background still fade smoothly.
+          transform: isHidden ? "translateY(-100%)" : "translateY(0)",
+          transition:
+            "transform 0.35s cubic-bezier(.22,.61,.36,1), background 0.3s ease, backdrop-filter 0.3s ease, border-color 0.3s ease",
+          willChange: "transform",
         }}
         aria-label="Primary"
       >
@@ -94,21 +143,22 @@ export default function Nav({ accent = ACCENT }: { accent?: string }) {
           </a>
 
           <div className="ct2u-nav-links">
-            {links.map(([l, h]) => (
-              <a key={l} href={h} className="ct2u-nav-link">
-                {l}
+            {navItems.map((item) => (
+              <a key={item.key} href={item.href} className="ct2u-nav-link">
+                {t(item.key)}
               </a>
             ))}
           </div>
 
           <div className="ct2u-nav-cta-group">
+            <LanguageSwitcher />
             <a
               href="https://app.cointech2u.com/h5/index.html#/pages/login/login"
               target="_blank"
               rel="noopener noreferrer"
               className="ct2u-nav-login"
             >
-              Log in
+              {t("nav.login")}
             </a>
             <a
               href="https://app.cointech2u.com/h51/index.html#/?invite_code=gr4Mca"
@@ -116,7 +166,7 @@ export default function Nav({ accent = ACCENT }: { accent?: string }) {
               rel="noopener noreferrer"
               className="ct2u-nav-signup"
             >
-              Sign up →
+              {t("nav.signup")}
             </a>
           </div>
 
@@ -139,18 +189,21 @@ export default function Nav({ accent = ACCENT }: { accent?: string }) {
         className={mobileOpen ? "ct2u-mobile-menu open" : "ct2u-mobile-menu"}
         aria-hidden={!mobileOpen}
       >
-        {links.map(([l, h]) => (
+        {navItems.map((item) => (
           <a
-            key={l}
-            href={h}
+            key={item.key}
+            href={item.href}
             className="ct2u-mobile-link"
             onClick={closeMobile}
             tabIndex={mobileOpen ? 0 : -1}
           >
-            {l}
+            {t(item.key)}
           </a>
         ))}
         <div className="ct2u-mobile-cta-group">
+          <div className="ct2u-mobile-lang">
+            <LanguageSwitcher />
+          </div>
           <a
             href="https://app.cointech2u.com/h5/index.html#/pages/login/login"
             target="_blank"
@@ -169,7 +222,7 @@ export default function Nav({ accent = ACCENT }: { accent?: string }) {
               fontWeight: 500,
             }}
           >
-            Log in
+            {t("nav.login")}
           </a>
           <a
             href="https://app.cointech2u.com/h51/index.html#/?invite_code=gr4Mca"
@@ -189,7 +242,7 @@ export default function Nav({ accent = ACCENT }: { accent?: string }) {
               boxShadow: `0 0 30px ${accent}55, inset 0 1px 0 rgba(255,255,255,0.18)`,
             }}
           >
-            Sign up →
+            {t("nav.signup")}
           </a>
         </div>
       </div>

@@ -1,16 +1,14 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import HeroDashboard from "./HeroDashboard";
-import LogoParticlesScene from "./v3/LogoParticles";
+import { useT } from "../lib/i18n";
 import { ACCENT } from "./theme";
 
 export default function Hero({ accent = ACCENT }: { accent?: string }) {
+  const t = useT();
   const sectionRef = useRef<HTMLElement>(null);
   const glowRef = useRef<HTMLDivElement>(null);
   const gridRef = useRef<HTMLDivElement>(null);
-  const logoRef = useRef<HTMLDivElement>(null);
-  const blurFilterRef = useRef<SVGFEGaussianBlurElement>(null);
 
   useEffect(() => {
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -21,10 +19,6 @@ export default function Hero({ accent = ACCENT }: { accent?: string }) {
 
     const clamp01 = (v: number) => Math.max(0, Math.min(1, v));
 
-    let lastY = window.scrollY;
-    let lastT = performance.now();
-    let smoothVel = 0; // px/ms, low-pass filtered
-
     const update = () => {
       const sec = sectionRef.current;
       if (!sec) return;
@@ -33,45 +27,25 @@ export default function Hero({ accent = ACCENT }: { accent?: string }) {
       const scrolled = Math.max(0, -rect.top);
       const hp = total > 0 ? clamp01(scrolled / total) : 0;
 
-      // Stage opacities — sequential, very brief overlaps so the title's
-      // motion blur doesn't bleed visually into stage 2's tagline/CTAs.
-      // s1 fully gone by hp=0.38; s2 starts fading in at 0.40.
-      const s1Lin = clamp01(1 - (hp - 0.25) * 8);
-      const s1 = s1Lin * s1Lin;
-      const s2In = clamp01((hp - 0.40) * 7);
-      const s2Out = clamp01(1 - (hp - 0.65) * 6);
-      const s2 = Math.min(s2In, s2Out);
-      const s3 = clamp01((hp - 0.78) * 6);
-
-      // Scroll velocity → vertical motion blur (smoothed via EMA).
-      // Lower caps so the smear stays inside the title's row.
-      const now = performance.now();
-      const dt = Math.max(1, now - lastT);
-      const instVel = (window.scrollY - lastY) / dt;
-      smoothVel = smoothVel * 0.85 + instVel * 0.15;
-      lastY = window.scrollY;
-      lastT = now;
-      // Triangle: blur peaks while title is mid-transition, returns to 0
-      // when title is fully visible OR fully gone — so it never streaks
-      // while invisible behind stage 2.
-      const triBlur = 4 * s1 * (1 - s1) * 9; // peak ~9px at s1=0.5
-      const velBlur = Math.min(5, Math.abs(smoothVel) * 1.5);
-      const totalBlur = Math.min(12, triBlur + velBlur);
-      blurFilterRef.current?.setAttribute("stdDeviation", `0 ${totalBlur.toFixed(2)}`);
+      // Three phases over the pin:
+      //   0.00 – 0.05  video only (both stages hidden)
+      //   0.05 – 0.40  stage 1 (tagline + CTAs) fades in and holds
+      //   0.40 – 0.58  stage 1 fades out, stage 2 fades in (brief crossfade)
+      //   0.58 – 1.00  stage 2 (badge + sub-title) is the resting view
+      const s1In = clamp01((hp - 0.05) * 8);
+      const s1Out = clamp01(1 - (hp - 0.40) * 7);
+      const s1 = Math.min(s1In, s1Out);
+      const s2 = clamp01((hp - 0.55) * 7);
 
       sec.style.setProperty("--hp", hp.toFixed(4));
       sec.style.setProperty("--s1-opacity", s1.toFixed(4));
       sec.style.setProperty("--s2-opacity", s2.toFixed(4));
-      sec.style.setProperty("--s3-opacity", s3.toFixed(4));
 
       if (glowRef.current) {
         glowRef.current.style.transform = `translate3d(-50%, ${scrolled * 0.3}px, 0)`;
       }
       if (gridRef.current) {
         gridRef.current.style.transform = `translate3d(0, ${scrolled * 0.4}px, 0)`;
-      }
-      if (logoRef.current) {
-        logoRef.current.style.transform = `translate3d(-50%, ${scrolled * 0.18}px, 0)`;
       }
 
       pending = false;
@@ -83,27 +57,7 @@ export default function Hero({ accent = ACCENT }: { accent?: string }) {
       raf = requestAnimationFrame(update);
     };
 
-    // Continuous rAF loop — decays velocity smoothly when scrolling stops.
-    const tick = () => {
-      const now = performance.now();
-      const dt = Math.max(1, now - lastT);
-      const instVel = (window.scrollY - lastY) / dt;
-      smoothVel = smoothVel * 0.9 + instVel * 0.1;
-      lastY = window.scrollY;
-      lastT = now;
-      const sec = sectionRef.current;
-      const s1 = sec
-        ? parseFloat(sec.style.getPropertyValue("--s1-opacity") || "1")
-        : 1;
-      const triBlur = 4 * s1 * (1 - s1) * 9;
-      const velBlur = Math.min(5, Math.abs(smoothVel) * 1.5);
-      const totalBlur = Math.min(12, triBlur + velBlur);
-      blurFilterRef.current?.setAttribute("stdDeviation", `0 ${totalBlur.toFixed(2)}`);
-      raf = requestAnimationFrame(tick);
-    };
-
     update();
-    raf = requestAnimationFrame(tick);
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", update);
     return () => {
@@ -115,29 +69,55 @@ export default function Hero({ accent = ACCENT }: { accent?: string }) {
 
   return (
     <section ref={sectionRef} className="ct2u-hero-pin" style={{ position: "relative" }}>
-      {/* Hidden SVG filter — vertical-only Gaussian blur for the title.
-          Filter region is generously expanded so vertical blur won't clip. */}
-      <svg
-        aria-hidden
-        width="0"
-        height="0"
-        style={{ position: "absolute", width: 0, height: 0, overflow: "hidden" }}
-      >
-        <defs>
-          <filter
-            id="ct2u-h1-blur"
-            x="-2%"
-            y="-30%"
-            width="104%"
-            height="160%"
-            colorInterpolationFilters="sRGB"
-          >
-            <feGaussianBlur ref={blurFilterRef} stdDeviation="0 0" />
-          </filter>
-        </defs>
-      </svg>
-
       <div className="ct2u-hero-sticky">
+        {/* Hero video backdrop — atmospheric loop behind all 3 stages.
+            Layered: <video> at the back, dark vignette gradient on top so
+            text + dashboard stay legible. Muted/autoplay/loop/playsInline
+            keeps it inline-playing on mobile per iOS rules. */}
+        <div
+          aria-hidden
+          className="ct2u-hero-video-wrap"
+          style={{
+            position: "absolute",
+            inset: 0,
+            overflow: "hidden",
+            pointerEvents: "none",
+            zIndex: 0,
+          }}
+        >
+          <video
+            src="/videos/hero-bg.mp4"
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="auto"
+            className="ct2u-hero-video"
+            style={{
+              position: "absolute",
+              inset: 0,
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+              opacity: 0.95,
+            }}
+          />
+          <div
+            aria-hidden
+            style={{
+              position: "absolute",
+              inset: 0,
+              /* Vignette — much lighter pass now that the video itself is
+                 close to full opacity. Keep a moderate dark band behind the
+                 nav for menu legibility, a very faint mid-tone over the
+                 stages, and a soft fade into the page bg at the bottom. */
+              background:
+                "linear-gradient(180deg, rgba(5,5,7,0.70) 0%, rgba(5,5,7,0.45) 7%, rgba(5,5,7,0.20) 16%, rgba(5,5,7,0.04) 32%, rgba(5,5,7,0.10) 55%, rgba(5,5,7,0.55) 100%)",
+              pointerEvents: "none",
+            }}
+          />
+        </div>
+
         {/* Background layers */}
         <div
           ref={glowRef}
@@ -170,93 +150,77 @@ export default function Hero({ accent = ACCENT }: { accent?: string }) {
             willChange: "transform",
           }}
         />
-        <div
-          ref={logoRef}
-          aria-hidden
-          className="ct2u-hero-logo"
-          style={{
-            position: "absolute",
-            top: -300,
-            left: "50%",
-            transform: "translate3d(-50%, 0, 0)",
-            width: 2000,
-            height: 1500,
-            pointerEvents: "none",
-            willChange: "transform",
-          }}
-        >
-          <LogoParticlesScene transparent />
-        </div>
-
-        {/* Stage 1 — Badge + H1 */}
+        {/* Stage 1 — Title: badge + headline (revealed on first scroll) */}
         <div className="ct2u-hero-stage ct2u-hero-stage-1">
           <div
-            className="reveal ct2u-stage-above"
+            className="ct2u-stage-above"
             style={{
               display: "inline-flex",
               alignItems: "center",
               gap: 10,
               padding: "6px 12px 6px 6px",
               borderRadius: 99,
-              border: "1px solid var(--line)",
-              background: "rgba(255,255,255,0.025)",
+              border: "1px solid rgba(255,255,255,0.12)",
+              background: "rgba(10,10,12,0.55)",
+              backdropFilter: "blur(14px)",
+              WebkitBackdropFilter: "blur(14px)",
               fontSize: 12,
-              color: "var(--text-2)",
+              color: "rgba(255,255,255,0.85)",
+              boxShadow:
+                "0 1px 0 rgba(255,255,255,0.04) inset, 0 8px 24px -12px rgba(0,0,0,0.7)",
             }}
           >
             <span
               style={{
                 padding: "2px 8px",
                 borderRadius: 99,
-                background: "rgba(227,81,238,0.12)",
+                background: "rgba(227,81,238,0.22)",
                 color: accent,
                 fontSize: 10.5,
                 letterSpacing: "0.08em",
                 fontFamily: "var(--font-jetbrains-mono), monospace",
               }}
             >
-              NEW
+              {t("hero.badge.new")}
             </span>
-            <span>Adaptive execution engine v4 — now in production</span>
+            <span>{t("hero.badge.text")}</span>
             <span style={{ color: "var(--text-3)" }}>→</span>
           </div>
 
           <h1
-            className="reveal ct2u-aurora-text ct2u-stage-focal ct2u-h1-mask"
+            className="ct2u-aurora-text ct2u-stage-focal"
             style={{
-              fontSize: "clamp(58px, 8.5vw, 96px)",
-              fontWeight: 500,
-              letterSpacing: "-0.035em",
+              fontSize: "clamp(56px, 8.4vw, 100px)",
+              fontWeight: 700,
+              letterSpacing: "-0.04em",
               filter: `drop-shadow(0 0 24px ${accent}40)`,
               margin: 0,
+              lineHeight: 1.02,
             }}
           >
-            <span className="ct2u-h1-line">
-              <span className="ct2u-h1-line-inner">Trade intelligence,</span>
-            </span>
-            <span className="ct2u-h1-line">
-              <span className="ct2u-h1-line-inner">
-                not <em style={{ fontStyle: "normal" }}>emotion</em>.
-              </span>
-            </span>
+            {t("hero.title.line1")}
+            <br />
+            {t("hero.title.line2.lead")}{" "}
+            <em style={{ fontStyle: "normal" }}>{t("hero.title.line2.emph")}</em>.
           </h1>
         </div>
 
-        {/* Stage 2 — Tagline + CTAs */}
+        {/* Stage 2 — Sub-title: tagline + CTAs (revealed on second scroll) */}
         <div className="ct2u-hero-stage ct2u-hero-stage-2">
           <p
             className="ct2u-stage-above"
             style={{
               fontSize: 19,
-              color: "var(--text-2)",
+              color: "rgba(255,255,255,0.92)",
               maxWidth: 680,
               margin: 0,
               lineHeight: 1.55,
+              textShadow: "0 1px 24px rgba(0,0,0,0.55)",
             }}
           >
-            Stay ahead of every market move with AI-powered precision, real-time analytics, and
-            verified intelligence — built for traders across{" "}
-            <span style={{ color: "var(--text)" }}>100+ countries</span>.
+            {t("hero.subtitle.pre")}{" "}
+            <span style={{ color: "#fff", fontWeight: 600 }}>{t("hero.subtitle.countries")}</span>
+            {t("hero.subtitle.post")}
           </p>
           <div
             className="ct2u-stage-focal"
@@ -268,37 +232,22 @@ export default function Hero({ accent = ACCENT }: { accent?: string }) {
             }}
           >
             <a
-              href="https://app.cointech2u.com/h51/index.html#/?invite_code=gr4Mca"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                padding: "14px 22px",
-                borderRadius: 10,
-                background: `linear-gradient(135deg, #7C7CFF, ${accent})`,
-                color: "#fff",
-                fontSize: 14,
-                fontWeight: 500,
-                display: "inline-flex",
-                alignItems: "center",
-                gap: 8,
-                boxShadow: `0 0 30px ${accent}55, inset 0 1px 0 rgba(255,255,255,0.18)`,
-              }}
-            >
-              Get started <span style={{ opacity: 0.7 }}>→</span>
-            </a>
-            <a
               href="#trading"
               style={{
                 padding: "14px 22px",
                 borderRadius: 10,
-                background: "rgba(255,255,255,0.03)",
-                color: "var(--text)",
+                background: "rgba(10,10,12,0.55)",
+                backdropFilter: "blur(14px)",
+                WebkitBackdropFilter: "blur(14px)",
+                color: "#fff",
                 fontSize: 14,
                 fontWeight: 500,
-                border: "1px solid var(--line-strong)",
+                border: "1px solid rgba(255,255,255,0.18)",
                 display: "inline-flex",
                 alignItems: "center",
                 gap: 8,
+                boxShadow:
+                  "0 1px 0 rgba(255,255,255,0.05) inset, 0 8px 24px -12px rgba(0,0,0,0.7)",
               }}
             >
               <span
@@ -311,20 +260,29 @@ export default function Hero({ accent = ACCENT }: { accent?: string }) {
                   boxShadow: "0 0 8px var(--green)",
                 }}
               />
-              View live performance
+              {t("hero.cta.viewLive")}
             </a>
           </div>
         </div>
 
-        {/* Stage 3 — Live dashboard */}
-        <div className="ct2u-hero-stage ct2u-hero-stage-3">
-          <div
-            className="float-soft ct2u-stage-focal"
-            style={{ margin: "0 auto", position: "relative" }}
+        {/* Persistent CTA — sits at the bottom of the hero video the whole
+            time the user is inside the pin (independent of stage opacities). */}
+        <div className="ct2u-hero-experience">
+          <h2 className="ct2u-hero-experience-title">{t("hero.experience.title")}</h2>
+          <a
+            className="ct2u-hero-experience-btn"
+            href="https://app.cointech2u.com/h51/index.html#/?invite_code=gr4Mca"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              background: `linear-gradient(135deg, #7C7CFF, ${accent})`,
+              boxShadow: `0 0 30px ${accent}55, inset 0 1px 0 rgba(255,255,255,0.18)`,
+            }}
           >
-            <HeroDashboard accent={accent} />
-          </div>
+            {t("hero.experience.getStarted")} <span style={{ opacity: 0.7 }}>→</span>
+          </a>
         </div>
+
       </div>
     </section>
   );

@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { useT } from "../lib/i18n";
 import { ACCENT } from "./theme";
 import { useParallax } from "./useParallax";
 
@@ -46,6 +47,7 @@ function Field({ label, placeholder, type = "text", textarea }: FieldProps) {
 }
 
 export default function Contact({ accent = ACCENT }: { accent?: string }) {
+  const t = useT();
   const [submitted, setSubmitted] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
   useParallax(sectionRef);
@@ -92,24 +94,23 @@ export default function Contact({ accent = ACCENT }: { accent?: string }) {
                 marginRight: 10,
               }}
             />
-            Contact
+            {t("contact.eyebrow")}
           </p>
           <h2
             style={{
-              fontSize: "clamp(32px, 3.6vw, 48px)",
+              fontSize: "clamp(42px, 5vw, 68px)",
               letterSpacing: "-0.025em",
               marginBottom: 22,
             }}
           >
-            Let&apos;s connect
+            {t("contact.title.line1")}
             <br />
-            <span style={{ color: "var(--text-2)", fontStyle: "italic", fontWeight: 400 }}>
-              and grow together.
+            <span style={{ color: "var(--text-2)", fontStyle: "italic", fontWeight: 400, fontSize: "0.65em" }}>
+              {t("contact.title.line2")}
             </span>
           </h2>
           <p style={{ fontSize: 15, color: "var(--text-2)", lineHeight: 1.6, marginBottom: 28 }}>
-            Whether you&apos;re a user, partner, or community builder — leave your contact and our
-            team will reach out to explore opportunities with CoinTech2u.
+            {t("contact.lede")}
           </p>
           <div style={{ borderTop: "1px solid var(--line)", paddingTop: 22 }}>
             <div
@@ -121,25 +122,25 @@ export default function Contact({ accent = ACCENT }: { accent?: string }) {
                 marginBottom: 10,
               }}
             >
-              Direct support
+              {t("contact.support.heading")}
             </div>
             <div style={{ fontSize: 14, color: "var(--text-2)", marginBottom: 6 }}>
-              Telegram · @CoinTech2u_Admin
+              {t("contact.support.telegram")}
             </div>
-            <div style={{ fontSize: 14, color: "var(--text-2)" }}>In-app live chat · 24/7</div>
+            <div style={{ fontSize: 14, color: "var(--text-2)" }}>{t("contact.support.chat")}</div>
           </div>
         </div>
 
         <form onSubmit={handle} style={{ display: "grid", gap: 14 }}>
           <div className="ct2u-md-stack" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
-            <Field label="Name" placeholder="Your full name" />
-            <Field label="Email" type="email" placeholder="you@email.com" />
+            <Field label={t("contact.field.name")} placeholder={t("contact.field.name.placeholder")} />
+            <Field label={t("contact.field.email")} type="email" placeholder={t("contact.field.email.placeholder")} />
           </div>
           <div className="ct2u-md-stack" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
-            <Field label="Telegram username" placeholder="@username" />
-            <Field label="Subject" placeholder="What's this about?" />
+            <Field label={t("contact.field.telegram")} placeholder={t("contact.field.telegram.placeholder")} />
+            <Field label={t("contact.field.subject")} placeholder={t("contact.field.subject.placeholder")} />
           </div>
-          <Field label="Message" placeholder="Tell us a bit more…" textarea />
+          <Field label={t("contact.field.message")} placeholder={t("contact.field.message.placeholder")} textarea />
           <button
             type="submit"
             className="ct2u-contact-submit"
@@ -166,10 +167,10 @@ export default function Contact({ accent = ACCENT }: { accent?: string }) {
             }}
           >
             {submitted ? (
-              "✓ Message received"
+              t("contact.submit.success")
             ) : (
               <>
-                Send message <span style={{ opacity: 0.4 }}>→</span>
+                {t("contact.submit")} <span style={{ opacity: 0.4 }}>→</span>
               </>
             )}
           </button>

@@ -1,11 +1,50 @@
-const groups: [string, string[]][] = [
-  ["Product", ["Live Trading", "Core Strengths", "Performance", "Mobile App"]],
-  ["Partners", ["OKX", "Bitget", "Bybit", "Binance"]],
-  ["Resources", ["Docs", "API", "Blog", "Status"]],
-  ["Legal", ["Terms", "Privacy", "Security", "Disclosures"]],
+"use client";
+
+import { useT } from "../lib/i18n";
+
+// Column groups defined as i18n keys — Partners column intentionally keeps
+// literal brand names since exchange names don't translate.
+const groups: { titleKey: string; links: { key?: string; literal?: string }[] }[] = [
+  {
+    titleKey: "footer.col.product",
+    links: [
+      { key: "footer.link.liveTrading" },
+      { key: "footer.link.coreStrengths" },
+      { key: "footer.link.performance" },
+      { key: "footer.link.mobileApp" },
+    ],
+  },
+  {
+    titleKey: "footer.col.partners",
+    links: [
+      { literal: "OKX" },
+      { literal: "Bitget" },
+      { literal: "Bybit" },
+      { literal: "Binance" },
+    ],
+  },
+  {
+    titleKey: "footer.col.resources",
+    links: [
+      { key: "footer.link.docs" },
+      { key: "footer.link.api" },
+      { key: "footer.link.blog" },
+      { key: "footer.link.status" },
+    ],
+  },
+  {
+    titleKey: "footer.col.legal",
+    links: [
+      { key: "footer.link.terms" },
+      { key: "footer.link.privacy" },
+      { key: "footer.link.security" },
+      { key: "footer.link.disclosures" },
+    ],
+  },
 ];
 
 export default function Footer() {
+  const t = useT();
   return (
     <footer className="ct2u-section" style={{ padding: "60px 32px 40px", borderTop: "1px solid var(--line)" }}>
       <div
@@ -37,12 +76,12 @@ export default function Footer() {
               margin: 0,
             }}
           >
-            AI-powered crypto trading infrastructure. Non-custodial by design.
+            {t("footer.tagline")}
           </p>
         </div>
 
-        {groups.map(([title, links]) => (
-          <div key={title}>
+        {groups.map((group) => (
+          <div key={group.titleKey}>
             <div
               style={{
                 fontSize: 11.5,
@@ -52,22 +91,25 @@ export default function Footer() {
                 marginBottom: 16,
               }}
             >
-              {title}
+              {t(group.titleKey)}
             </div>
-            {links.map((l) => (
-              <a
-                key={l}
-                href="#"
-                style={{
-                  display: "block",
-                  fontSize: 13.5,
-                  color: "var(--text-2)",
-                  marginBottom: 10,
-                }}
-              >
-                {l}
-              </a>
-            ))}
+            {group.links.map((l, i) => {
+              const label = l.key ? t(l.key) : l.literal ?? "";
+              return (
+                <a
+                  key={l.key ?? `${group.titleKey}-${i}`}
+                  href="#"
+                  style={{
+                    display: "block",
+                    fontSize: 13.5,
+                    color: "var(--text-2)",
+                    marginBottom: 10,
+                  }}
+                >
+                  {label}
+                </a>
+              );
+            })}
           </div>
         ))}
       </div>
@@ -87,8 +129,8 @@ export default function Footer() {
           color: "var(--text-3)",
         }}
       >
-        <span>© 2026 CoinTech2u. Crypto trading involves substantial risk.</span>
-        <span className="mono">v4.2.1 · all systems operational</span>
+        <span>{t("footer.copyright")}</span>
+        <span className="mono">{t("footer.statusLine")}</span>
       </div>
     </footer>
   );

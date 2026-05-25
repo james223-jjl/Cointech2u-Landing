@@ -37,14 +37,39 @@ const vertexShader = /* glsl */ `
     float p = clamp((progress - d) / (1.0 - d), 0.0, 1.0);
     p = ease(p);
 
-    // Noise fades out as particles assemble, so the formed logo holds steady.
+    // Dispersal noise during gather phase — fades to 0 once particles arrive.
     vec3 noise = vec3(
       sin(aRandom.x + time * 1.5),
       cos(aRandom.y + time * 1.2),
       sin(aRandom.z + time)
     ) * (0.1 * (1.0 - p));
 
-    vec3 pos = mix(aRandom, aLogo, p) + noise;
+    // ── Slow expand / contract (kept) ────────────────────────────────
+    // 6-second cycle: scale 1.00 → 1.08 → 1.00, eased via half-cosine
+    // (≈ easeInOutSine) — produces a smooth, slow breath. The "pulse /
+    // heartbeat" extras (brightness boost, particle-size boost, radial
+    // ripple) have been removed; only the macro scale change remains.
+    const float BREATH_PERIOD = 6.0;
+    const float BREATH_AMP    = 0.08;
+    float breathT   = mod(time, BREATH_PERIOD) / BREATH_PERIOD;
+    float breathRaw = 0.5 - 0.5 * cos(breathT * 6.28318);
+    float breathScale = 1.0 + BREATH_AMP * breathRaw;
+
+    // ── Subtle wave wobble across all particles ──────────────────────
+    // Small per-particle drift on three axes. Per-particle phase so
+    // neighbours drift slightly out of step (organic, not synchronous).
+    // Amplitude ≤ ±0.018 — visible motion but never exaggerated.
+    float phase = aRandom.x * 1.7 + aRandom.y * 2.3;
+    vec3 wobble = vec3(
+      sin(time * 0.5 + phase),
+      cos(time * 0.4 + phase * 1.3),
+      sin(time * 0.6 + phase * 0.8)
+    ) * 0.018;
+
+    // Compose: scaled logo target + dispersal noise + wobble (×p so it
+    // only rides on the assembled logo, not the gather animation).
+    vec3 logoTarget = aLogo * breathScale;
+    vec3 pos = mix(aRandom, logoTarget, p) + noise + wobble * p;
 
     vType = aType;
     vY = aLogo.y;
@@ -215,45 +240,36 @@ function loadLogoPositions(src: string): Promise<LogoSample> {
 
 function ParticleSystem({ bufs }: { bufs: Buffers }) {
   const matRef = useRef<THREE.ShaderMaterial>(null);
-  // Start at state 1 (logo holding, progress=1) so the page loads with the
-  // logo already visible. Cycle: hold → dissipate → reform → hold → ...
+  // Start at state 0 (dispersed, progress=0) so the page loads with
+  // particles scattered and they gather into the logo first.
+  // Cycle: gather → hold → dissipate → gather → ...
   // holdTime accumulates seconds while in the "logo visible" state.
-  const stateRef = useRef({ state: 1, progress: 1, holdTime: 0 });
+  const stateRef = useRef({ state: 0, progress: 0, holdTime: 0 });
 
   const uniforms = useMemo(
     () => ({
       time: { value: 0 },
-      progress: { value: 1 },
+      progress: { value: 0 },
     }),
     [],
   );
 
-  useFrame((s, delta) => {
+  useFrame((s) => {
     const mat = matRef.current;
     if (!mat) return;
     const time = s.clock.elapsedTime;
     mat.uniforms.time.value = time;
 
     const st = stateRef.current;
+    // One-shot animation: gather (state 0) → hold forever (state 1).
+    // Dispersal/cycle states removed — once particles form the logo they
+    // stay locked in place. `time` uniform keeps updating for any internal
+    // shader motion that's not driven by `progress`.
     if (st.state === 0) {
       st.progress += 0.003;
       if (st.progress >= 1) {
         st.progress = 1;
         st.state = 1;
-        st.holdTime = 0;
-      }
-    } else if (st.state === 1) {
-      // Hold the logo for at least 5.5 seconds (frame-rate independent).
-      st.holdTime += delta;
-      if (st.holdTime > 5.5) {
-        st.state = 2;
-        st.holdTime = 0;
-      }
-    } else if (st.state === 2) {
-      st.progress -= 0.003;
-      if (st.progress <= 0) {
-        st.progress = 0;
-        st.state = 0;
       }
     }
     mat.uniforms.progress.value = st.progress;

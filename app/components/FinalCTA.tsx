@@ -60,7 +60,7 @@ export default function FinalCTA({ accent = ACCENT }: { accent?: string }) {
         >
           Markets don&apos;t sleep.
           <br />
-          <span style={{ color: "var(--text-2)", fontStyle: "italic", fontWeight: 400 }}>
+          <span style={{ color: "var(--text-2)", fontStyle: "italic", fontWeight: 400, fontSize: "0.65em" }}>
             Neither should your edge.
           </span>
         </h2>

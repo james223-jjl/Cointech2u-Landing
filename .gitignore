@@ -6,3 +6,8 @@ out
 !.env.example
 *.tsbuildinfo
 next-env.d.ts
+
+# tooling caches / local backups
+.claude/
+.wrangler/
+_backups/

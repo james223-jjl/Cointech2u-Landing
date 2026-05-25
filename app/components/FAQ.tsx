@@ -1,10 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import { useT } from "../lib/i18n";
 import { ACCENT } from "./theme";
 import { faqItems } from "./faq-data";
 
 export default function FAQ({ accent = ACCENT }: { accent?: string }) {
+  const t = useT();
   const [open, setOpen] = useState(0);
 
   return (
@@ -24,7 +26,7 @@ export default function FAQ({ accent = ACCENT }: { accent?: string }) {
           alignItems: "flex-start",
         }}
       >
-        <div style={{ position: "sticky", top: 120 }}>
+        <div className="ct2u-faq-aside" style={{ position: "sticky", top: 120 }}>
           <p
             style={{
               fontSize: 12,
@@ -45,30 +47,29 @@ export default function FAQ({ accent = ACCENT }: { accent?: string }) {
                 marginRight: 10,
               }}
             />
-            FAQ
+            {t("faq.eyebrow")}
           </p>
           <h2
             style={{
-              fontSize: "clamp(32px, 3.6vw, 48px)",
+              fontSize: "clamp(42px, 5vw, 68px)",
               letterSpacing: "-0.025em",
               marginBottom: 22,
             }}
           >
-            Questions, answered
+            {t("faq.title.line1")}
             <br />
-            <span style={{ color: "var(--text-2)", fontStyle: "italic", fontWeight: 400 }}>
-              plainly.
+            <span style={{ color: "var(--text-2)", fontStyle: "italic", fontWeight: 400, fontSize: "0.65em" }}>
+              {t("faq.title.line2")}
             </span>
           </h2>
           <p style={{ fontSize: 15, color: "var(--text-2)", lineHeight: 1.6 }}>
-            Find instant answers about how CoinTech2u works — from AI strategies and safety to setup
-            and performance tracking.
+            {t("faq.lede")}
           </p>
         </div>
 
         <div style={{ borderTop: "1px solid var(--line)" }}>
           {faqItems.map((it, i) => (
-            <div key={it.q} style={{ borderBottom: "1px solid var(--line)" }}>
+            <div key={it.qKey} style={{ borderBottom: "1px solid var(--line)" }}>
               <button
                 onClick={() => setOpen(open === i ? -1 : i)}
                 aria-expanded={open === i}
@@ -88,7 +89,7 @@ export default function FAQ({ accent = ACCENT }: { accent?: string }) {
                 }}
               >
                 <span style={{ fontSize: 17, fontWeight: 500, letterSpacing: "-0.01em" }}>
-                  {it.q}
+                  {t(it.qKey)}
                 </span>
                 <span
                   aria-hidden
@@ -127,7 +128,7 @@ export default function FAQ({ accent = ACCENT }: { accent?: string }) {
                     maxWidth: 680,
                   }}
                 >
-                  {it.a}
+                  {t(it.aKey)}
                 </p>
               </div>
             </div>
