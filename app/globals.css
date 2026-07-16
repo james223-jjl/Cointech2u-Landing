@@ -415,11 +415,17 @@ body::before {
   gap: 28px;
   align-items: center;
   font-size: 13.5px;
+  /* Absorb width pressure here (whitespace between links) so the CTA
+     buttons on the right never get squeezed as the window narrows. */
+  min-width: 0;
+  flex-shrink: 1;
 }
 .ct2u-nav-cta-group {
   display: flex;
   gap: 10px;
   align-items: center;
+  /* Keep the login/signup buttons at full size — never compress them. */
+  flex-shrink: 0;
 }
 
 /* === Language switcher — pill trigger + floating menu =====================
@@ -432,6 +438,8 @@ body::before {
 .ct2u-lang-trigger {
   display: inline-flex;
   align-items: center;
+  white-space: nowrap;
+  flex-shrink: 0;
   gap: 6px;
   padding: 6px 12px;
   border-radius: 99px;
@@ -553,6 +561,8 @@ body::before {
 .ct2u-nav-login {
   display: inline-flex;
   align-items: center;
+  white-space: nowrap;
+  flex-shrink: 0;
   font-size: 13.5px;
   font-weight: 500;
   padding: 8px 16px;
@@ -574,6 +584,8 @@ body::before {
 .ct2u-nav-signup {
   display: inline-flex;
   align-items: center;
+  white-space: nowrap;
+  flex-shrink: 0;
   font-size: 13.5px;
   font-weight: 500;
   padding: 8px 16px;
