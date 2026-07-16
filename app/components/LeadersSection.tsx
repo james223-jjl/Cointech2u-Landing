@@ -33,8 +33,7 @@ export default function LeadersSection({
           <p
             style={{
               fontSize: 12,
-              letterSpacing: "0.18em",
-              textTransform: "uppercase",
+              letterSpacing: "0.06em",
               color: accent,
               margin: 0,
               marginBottom: 18,
@@ -50,10 +49,6 @@ export default function LeadersSection({
             }}
           >
             {t("leaders.title.line1")}
-            <br />
-            <span style={{ color: "var(--text-2)", fontStyle: "italic", fontWeight: 400, fontSize: "0.65em" }}>
-              {t("leaders.title.line2")}
-            </span>
           </h2>
           <p
             style={{

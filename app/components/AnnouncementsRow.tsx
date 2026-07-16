@@ -130,7 +130,7 @@ export default function AnnouncementsRow({ accent = ACCENT }: { accent?: string 
               marginRight: 10,
             }}
           />
-          Latest announcements
+          Latest Announcements
         </p>
         <a href="/announcements/" className="ct2u-app-ann-link">
           View all <span style={{ opacity: 0.5 }}>→</span>

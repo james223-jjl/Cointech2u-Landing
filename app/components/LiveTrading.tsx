@@ -104,8 +104,7 @@ export default function LiveTrading({ accent = ACCENT }: { accent?: string }) {
           <p
             style={{
               fontSize: 12,
-              letterSpacing: "0.18em",
-              textTransform: "uppercase",
+              letterSpacing: "0.06em",
               color: accent,
               margin: 0,
               marginBottom: 22,
@@ -130,10 +129,10 @@ export default function LiveTrading({ accent = ACCENT }: { accent?: string }) {
               marginBottom: 20,
             }}
           >
-            Real account.
+            Live account, Live data
             <br />
-            <span style={{ color: "var(--text-2)", fontStyle: "italic", fontWeight: 400 }}>
-              Real performance, in real time.
+            <span style={{ color: "var(--text-2)", fontStyle: "italic", fontWeight: 400, fontSize: "clamp(14px, 1.4vw, 18px)", display: "block", marginTop: "0.6em", lineHeight: 1.5 }}>
+              Everything on this dashboard is live data from an active Cointech2u account, not a marketing mockup. Reload the page anytime to see the numbers move.
             </span>
           </h2>
           <p

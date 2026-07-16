@@ -1,191 +1,154 @@
 "use client";
 
-import { useRef, type MouseEvent as ReactMouseEvent } from "react";
+import { useRef } from "react";
 import { useT } from "../lib/i18n";
 import { ACCENT } from "./theme";
 import { useParallax } from "./useParallax";
-import VoronoiBackdrop from "./VoronoiBackdrop";
-
-type IconKind = "shield" | "ai" | "verified" | "api" | "clock" | "lock";
-
-/* Cursor-tracking spotlight: writes the cursor's card-local position into
-   CSS custom properties on the card. The CSS uses these to position a
-   purple radial gradient at the cursor — a "follow-light" feel. */
-function handleCardMouseMove(e: ReactMouseEvent<HTMLElement>) {
-  const el = e.currentTarget;
-  const rect = el.getBoundingClientRect();
-  el.style.setProperty("--x", `${e.clientX - rect.left}px`);
-  el.style.setProperty("--y", `${e.clientY - rect.top}px`);
-}
-
-/* 6 Voronoi seed anchors pinned to a 3×2 grid (3 columns × 2 rows).
-   Slight asymmetric Y offsets within each row so cell boundaries are
-   diagonal rather than perfectly vertical/horizontal, producing the
-   chamfered Voronoi look while keeping each card inside its own panel.
-   Module-scoped for a stable reference across renders. */
-const STRENGTH_ANCHORS: ReadonlyArray<readonly [number, number]> = [
-  [0.16, 0.30], // card 01 — top-left
-  [0.50, 0.22], // card 02 — top-center
-  [0.84, 0.28], // card 03 — top-right
-  [0.18, 0.78], // card 04 — bottom-left
-  [0.50, 0.74], // card 05 — bottom-center
-  [0.82, 0.76], // card 06 — bottom-right
-];
 
 type CardLayout = "stat" | "visual";
 
 type CardItem = {
   n: string;
+  slug: string;
   /** Tiny uppercase label at the top of the card (Apple "Up to" / category label). */
   eyebrow: string;
   /** "stat" cards lead with a big number; "visual" cards lead with a big icon. */
   layout: CardLayout;
-  /** Hero stat (only used by "stat" layout). */
   big?: string;
-  /** Optional small unit beside the stat (e.g. "ms", "days"). */
   bigUnit?: string;
-  /** Single short tagline below the hero element. */
+  /** Short tagline below the hero element. */
   caption: string;
-  /** Icon shown big for "visual" layout. */
-  icon: IconKind;
+  /** Long-form prose shown in the pillar detail section below the card row. */
+  body: string;
+  /** Short feature/keyword chips shown above the CTA in the pillar block. */
+  tags: string[];
+  /** Decorative video shown in the pillar's visual block. */
+  video: string;
+  /** Optional separate video for the small card-row media block. Falls back
+      to `video` when omitted. */
+  cardVideo?: string;
+  /** Small card-row content — decoupled from the pillar block above so the
+      highlight row can show its own set of feature labels. */
+  cardTitle: string;
+  cardSub: string;
+  /** Big figure shown in the small card-row body (stat or short word). */
+  cardBig: string;
+  /** When true, the small card video uses object-fit: contain (full frame)
+      instead of cover (cropped fill). */
+  cardVideoContain?: boolean;
+  /** Optional scale multiplier for the pillar (big card) video — e.g. 1.15
+      to zoom in 15%. */
+  pillarVideoZoom?: number;
 };
 
-// String fields hold i18n keys, not literals — resolved via t() in the render
-// loop below so swapping language re-renders the cards in place.
+// 5 cards — virtuals.io-style row. "Always on" was dropped because it overlaps
+// with "Live since 2022".
 const items: CardItem[] = [
   {
     n: "01",
-    eyebrow: "core.card.custody.eyebrow",
+    slug: "custody",
+    // Pillar 01 now shows the Equity Guard pillar content (swapped with 02).
+    // Videos + small-card content stay on item 01 — only the pillar copy
+    // (eyebrow / caption / body / tags) switched.
+    eyebrow: "core.card.ai.eyebrow",
     layout: "stat",
     big: "100%",
     bigUnit: "core.card.custody.unit",
-    caption: "core.card.custody.caption",
-    icon: "shield",
+    caption: "core.card.ai.caption",
+    body: "core.card.ai.body",
+    tags: ["Equity cut-loss", "Auto position close", "Drawdown protection", "CoinTech2u 3.0"],
+    video: "/videos/strength-01-custody.mp4",
+    cardVideo: "/videos/strength-01-card.mp4",
+    cardTitle: "core.hl.1.title",
+    cardSub: "core.hl.1.sub",
+    cardBig: "SAFE",
   },
   {
     n: "02",
-    eyebrow: "core.card.ai.eyebrow",
+    slug: "ai",
+    // Pillar 02 now shows the Profit Guard pillar content.
+    eyebrow: "core.card.custody.eyebrow",
     layout: "visual",
-    caption: "core.card.ai.caption",
-    icon: "ai",
+    caption: "core.card.custody.caption",
+    body: "core.card.custody.body",
+    tags: ["Auto profit transfer", "Equity target", "Trading → Funding wallet", "CoinTech2u 3.0"],
+    video: "/videos/strength-02-ai.mp4",
+    cardVideo: "/videos/strength-02-card.mp4",
+    cardTitle: "core.hl.2.title",
+    cardSub: "core.hl.2.sub",
+    cardBig: "AUTO",
+    pillarVideoZoom: 1.08,
   },
   {
     n: "03",
+    slug: "live2022",
     eyebrow: "core.card.live2022.eyebrow",
     layout: "stat",
     big: "1,587",
     bigUnit: "core.card.live2022.unit",
     caption: "core.card.live2022.caption",
-    icon: "verified",
+    body: "core.card.live2022.body",
+    tags: ["Self-custody", "Own exchange accounts", "Zero third-party risk", "Full transparency"],
+    video: "/videos/strength-03-pillar.mp4",
+    cardVideo: "/videos/strength-03-card.mp4",
+    cardTitle: "core.hl.3.title",
+    cardSub: "core.hl.3.sub",
+    cardBig: "100%",
   },
   {
     n: "04",
+    slug: "latency",
     eyebrow: "core.card.latency.eyebrow",
     layout: "stat",
     big: "42",
     bigUnit: "core.card.latency.unit",
     caption: "core.card.latency.caption",
-    icon: "api",
+    body: "core.card.latency.body",
+    tags: ["Continuous learning", "Volatility monitoring", "Entry/exit optimization", "Risk-minimizing"],
+    video: "/videos/strength-04-pillar.mp4",
+    cardVideo: "/videos/strength-04-card.mp4",
+    cardTitle: "core.hl.4.title",
+    cardSub: "core.hl.4.sub",
+    cardBig: "24/7",
   },
   {
     n: "05",
-    eyebrow: "core.card.always.eyebrow",
-    layout: "stat",
-    big: "24/7",
-    caption: "core.card.always.caption",
-    icon: "clock",
-  },
-  {
-    n: "06",
+    slug: "discipline",
     eyebrow: "core.card.discipline.eyebrow",
     layout: "visual",
     caption: "core.card.discipline.caption",
-    icon: "lock",
+    body: "core.card.discipline.body",
+    tags: ["98% win rate", "Verifiable data", "Real user performance", "100+ countries"],
+    video: "/videos/strength-05-pillar.mp4",
+    cardVideo: "/videos/strength-05-card.mp4",
+    cardTitle: "core.hl.5.title",
+    cardSub: "core.hl.5.sub",
+    cardBig: "98%",
   },
 ];
 
-function StrengthIcon({ kind, size = 40 }: { kind: IconKind; size?: number }) {
-  const common = {
-    width: size,
-    height: size,
-    viewBox: "0 0 24 24",
-    fill: "none",
-    stroke: "currentColor",
-    strokeWidth: 1.4,
-    strokeLinecap: "round" as const,
-    strokeLinejoin: "round" as const,
-    "aria-hidden": true,
-  };
-  if (kind === "shield") {
-    return (
-      <svg {...common}>
-        <path d="M12 2.5 L20 5.5 V11 C20 16 16.5 19.5 12 21 C7.5 19.5 4 16 4 11 V5.5 L12 2.5 Z" />
-        <path d="M8.5 11.5 L11 14 L15.5 9.5" />
-      </svg>
-    );
-  }
-  if (kind === "ai") {
-    return (
-      <svg {...common}>
-        <circle cx="12" cy="12" r="2.2" />
-        <ellipse cx="12" cy="12" rx="9" ry="3.5" />
-        <ellipse cx="12" cy="12" rx="9" ry="3.5" transform="rotate(60 12 12)" />
-        <ellipse cx="12" cy="12" rx="9" ry="3.5" transform="rotate(120 12 12)" />
-      </svg>
-    );
-  }
-  if (kind === "verified") {
-    return (
-      <svg {...common}>
-        <path d="M3.5 20 H20.5" />
-        <path d="M6.5 20 V14" />
-        <path d="M11 20 V10" />
-        <path d="M15.5 20 V13" />
-        <path d="M19.5 4 L21.5 6 L17.5 10" />
-      </svg>
-    );
-  }
-  if (kind === "clock") {
-    return (
-      <svg {...common}>
-        <circle cx="12" cy="12" r="9" />
-        <path d="M12 7 V12 L15.5 14" />
-      </svg>
-    );
-  }
-  if (kind === "lock") {
-    return (
-      <svg {...common}>
-        <rect x="5.5" y="11" width="13" height="9.5" rx="1.6" />
-        <path d="M8.5 11 V8 A3.5 3.5 0 0 1 15.5 8 V11" />
-      </svg>
-    );
-  }
-  // "api" — lightning bolt + connect
-  return (
-    <svg {...common}>
-      <path d="M13 2.5 L4.5 13.5 H10.5 L9 21.5 L19.5 9.5 H13 L13 2.5 Z" />
-    </svg>
-  );
-}
+const CTA_URL = "https://app.cointech2u.com/h51/index.html#/?invite_code=gr4Mca";
 
 export default function CoreStrengths({ accent = ACCENT }: { accent?: string }) {
   const t = useT();
   const sectionRef = useRef<HTMLElement>(null);
   useParallax(sectionRef);
-  // One ref per card — passed to VoronoiBackdrop so each card is clip-pathed
-  // to its Voronoi cell. Stable identity since useRef returns the same array.
-  const cardRefs = useRef(items.map(() => ({ current: null as HTMLElement | null })));
+
+  const handleCardClick = (slug: string) => (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    const target = document.getElementById(`pillar-${slug}`);
+    if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
   return (
     <section
       ref={sectionRef}
       id="core-strengths"
-      className="reveal ct2u-section"
+      className="reveal ct2u-section ct2u-strengths"
       style={{ padding: "84px 32px", borderTop: "1px solid var(--line)" }}
     >
       <div style={{ maxWidth: 1280, margin: "0 auto" }}>
         <div
-          className="ct2u-px-rise-fade"
           style={{
             textAlign: "center",
             marginBottom: 40,
@@ -197,8 +160,7 @@ export default function CoreStrengths({ accent = ACCENT }: { accent?: string }) 
           <p
             style={{
               fontSize: 12,
-              letterSpacing: "0.18em",
-              textTransform: "uppercase",
+              letterSpacing: "0.06em",
               color: accent,
               margin: 0,
               marginBottom: 22,
@@ -214,116 +176,99 @@ export default function CoreStrengths({ accent = ACCENT }: { accent?: string }) 
             }}
           >
             {t("core.title.line1")}
-            <br />
-            <span style={{ color: "var(--text-2)", fontStyle: "italic", fontWeight: 400, fontSize: "0.65em" }}>
-              {t("core.title.line2")}
-            </span>
           </h2>
         </div>
 
-        <div className="ct2u-strength-grid ct2u-strength-grid--bigbox">
-          <VoronoiBackdrop
-            numPoints={6}
-            seedAnchors={STRENGTH_ANCHORS}
-            cardRefs={cardRefs.current}
-            driftAmp={5}
-            mouseRadius={260}
-            mouseForce={22}
-            maxOffset={18}
-            clipInset={5}
-          />
-          {items.map((it, i) => (
-            <article
-              key={it.n}
-              ref={cardRefs.current[i]}
-              className={
-                "ct2u-strength-card ct2u-strength-card--voronoi" +
-                (i === 2 ? " ct2u-strength-card--hero" : "")
-              }
-              tabIndex={0}
-              onMouseMove={handleCardMouseMove}
+        <div className="ct2u-strengths-row">
+          {items.map((it) => (
+            <a
+              key={it.slug}
+              href={`#pillar-${it.slug}`}
+              onClick={handleCardClick(it.slug)}
+              className="ct2u-strengths-card"
             >
-              <span className="ct2u-strength-card-sweep" aria-hidden />
-              {/* Single composite exchange image used as a faded watermark
-                  behind the stat + caption. Painted before content in the
-                  DOM so .content paints on top. */}
-              {it.icon === "api" && (
-                <div className="ct2u-strength-card-bg-logos" aria-hidden>
-                  <img
-                    src="/strengths/exchange.png"
-                    alt=""
-                    loading="lazy"
-                    decoding="async"
+              <div className="ct2u-strengths-card-media">
+                <video
+                  src={it.cardVideo ?? it.video}
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  preload="metadata"
+                  className={
+                    "ct2u-strengths-card-video" +
+                    (it.cardVideoContain ? " ct2u-strengths-card-video--contain" : "")
+                  }
+                  aria-hidden
+                />
+              </div>
+              <div className="ct2u-strengths-card-body">
+                <span className="mono ct2u-strengths-card-num">{it.n}</span>
+                <span className="ct2u-strengths-card-stat-row">
+                  <span className="ct2u-strengths-card-stat-big">{it.cardBig}</span>
+                </span>
+                <h3 className="ct2u-strengths-card-title">{t(it.cardTitle)}</h3>
+                <p className="ct2u-strengths-card-sub">{t(it.cardSub)}</p>
+              </div>
+              <span className="ct2u-strengths-card-cta mono">
+                {t(it.cardTitle)} <span aria-hidden>→</span>
+              </span>
+            </a>
+          ))}
+        </div>
+
+        <div className="ct2u-strengths-pillars">
+          {items.map((it, i) => {
+            const reversed = i % 2 === 1;
+            return (
+              <article
+                key={it.slug}
+                id={`pillar-${it.slug}`}
+                className={
+                  "ct2u-strengths-pillar" +
+                  (reversed ? " ct2u-strengths-pillar--reverse" : "")
+                }
+              >
+                <div className="ct2u-strengths-pillar-visual" aria-hidden>
+                  <video
+                    src={it.video}
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                    preload="metadata"
+                    className="ct2u-strengths-pillar-video"
+                    style={
+                      it.pillarVideoZoom
+                        ? { transform: `scale(${it.pillarVideoZoom})` }
+                        : undefined
+                    }
                   />
                 </div>
-              )}
-              <div className="ct2u-strength-card-content">
-                {/* Top: small uppercase eyebrow label (Apple's "Up to" /
-                    category line). */}
-                <span className="mono ct2u-strength-card-eyebrow">
-                  {t(it.eyebrow)}
-                </span>
-
-                {/* Middle: focal element. Stat layout shows a big number +
-                    optional unit; visual layout shows a big centred icon. */}
-                <div className="ct2u-strength-card-hero">
-                  {it.layout === "stat" ? (
-                    <span className="ct2u-strength-card-stat-row">
-                      <span className="ct2u-strength-card-stat-big">
-                        {it.big}
-                      </span>
-                      {it.bigUnit && (
-                        <span className="ct2u-strength-card-stat-unit">
-                          {t(it.bigUnit)}
-                        </span>
-                      )}
-                    </span>
-                  ) : (
-                    <span className="ct2u-strength-card-icon-big" aria-hidden>
-                      <StrengthIcon kind={it.icon} size={84} />
-                    </span>
-                  )}
-                </div>
-
-                {/* Optional supporting visual — only on cards where it
-                    reinforces the stat (sparkline for "live performance",
-                    exchange logos for the latency card). */}
-                {it.icon === "verified" && (
-                  <svg
-                    className="ct2u-strength-card-spark"
-                    viewBox="0 0 200 36"
-                    preserveAspectRatio="none"
-                    aria-hidden
+                <div className="ct2u-strengths-pillar-content">
+                  <div className="ct2u-strengths-pillar-head mono">
+                    <span className="ct2u-strengths-pillar-num">{it.n}</span>
+                    <span className="ct2u-strengths-pillar-divider" aria-hidden />
+                    <span className="ct2u-strengths-pillar-name">{t(it.eyebrow)}</span>
+                  </div>
+                  <h3 className="ct2u-strengths-pillar-headline">{t(it.caption)}</h3>
+                  <p className="ct2u-strengths-pillar-body">{t(it.body)}</p>
+                  <a
+                    className="ct2u-strengths-pillar-cta"
+                    href={CTA_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      background: `linear-gradient(135deg, #7C7CFF, ${accent})`,
+                      boxShadow: `0 0 24px ${accent}55, inset 0 1px 0 rgba(255,255,255,0.18)`,
+                    }}
                   >
-                    <defs>
-                      <linearGradient
-                        id={`ct2u-spark-grad-${i}`}
-                        x1="0"
-                        x2="1"
-                        y1="0"
-                        y2="0"
-                      >
-                        <stop offset="0%" stopColor="rgba(227,81,238,0.25)" />
-                        <stop offset="60%" stopColor="rgba(227,81,238,1)" />
-                        <stop offset="100%" stopColor="rgba(227,81,238,1)" />
-                      </linearGradient>
-                    </defs>
-                    <path
-                      d="M0 28 L18 26 L36 24 L54 25 L72 22 L90 19 L108 20 L126 16 L144 11 L162 9 L180 6 L200 4"
-                      stroke={`url(#ct2u-spark-grad-${i})`}
-                      strokeWidth="1.6"
-                      fill="none"
-                      strokeLinejoin="round"
-                      strokeLinecap="round"
-                    />
-                  </svg>
-                )}
-
-                {/* Bottom: short caption. */}
-                <p className="ct2u-strength-card-caption">{t(it.caption)}</p>
-              </div>
-            </article>
-          ))}
+                    Explore {t(it.eyebrow)} now <span aria-hidden>→</span>
+                  </a>
+                </div>
+              </article>
+            );
+          })}
         </div>
       </div>
     </section>

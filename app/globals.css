@@ -1053,148 +1053,92 @@ body::before {
   .ct2u-drift-y, .ct2u-drift-y-centered { animation: none !important; }
 }
 
-/* === Pinned hero — 2-stage scroll reveal ===
-   Section is 150vh; inner is sticky 100vh. Two stages crossfade based
-   on `--hp` (0..1) which the Hero JS writes to the section element. */
-.ct2u-hero-pin {
-  min-height: 150vh;
+/* === Hero — virtuals.io-style two-column layout ===
+   Square video on the left, centered text + CTA on the right.
+   No scroll-pin, no parallax, no stage crossfade. */
+.ct2u-hero {
+  position: relative;
+  padding: clamp(96px, 12vh, 140px) clamp(20px, 4vw, 56px) clamp(56px, 8vh, 96px);
 }
-.ct2u-hero-sticky {
-  position: sticky;
-  top: 0;
-  height: 100vh;
-  overflow: hidden;
-}
-.ct2u-hero-stage {
-  position: absolute;
-  inset: 0;
+.ct2u-hero-shell {
   display: grid;
-  grid-template-rows: 1fr auto 1fr;
-  justify-items: center;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: clamp(28px, 4vw, 64px);
   align-items: center;
-  text-align: center;
-  padding: 0 32px;
-  pointer-events: none;
-  will-change: opacity;
+  max-width: 1320px;
+  margin: 0 auto;
 }
-.ct2u-hero-stage > *,
-.ct2u-hero-stage a,
-.ct2u-hero-stage button {
-  pointer-events: auto;
-}
-.ct2u-stage-above {
-  grid-row: 1;
-  align-self: end;
-  margin-bottom: 28px;
-}
-.ct2u-stage-focal {
-  grid-row: 2;
+.ct2u-hero-media {
+  position: relative;
   width: 100%;
-  max-width: 1100px;
+  aspect-ratio: 1 / 1;
+  border-radius: 28px;
+  overflow: hidden;
+  background: #0A0A0C;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: 0 30px 80px -40px rgba(0, 0, 0, 0.7);
 }
-
-/* Stage opacities are computed in Hero.tsx and written as CSS vars on the
-   section element. Fallbacks keep stage 1 visible if JS hasn't run yet. */
-/* Both stages default to hidden — they fade in on scroll. The
-   prefers-reduced-motion block below force-overrides to 1 so users
-   with reduced-motion still see the content stacked. */
-.ct2u-hero-stage-1 { opacity: var(--s1-opacity, 0); }
-.ct2u-hero-stage-2 { opacity: var(--s2-opacity, 0); }
-
-/* Always-visible bottom CTA — pinned to the bottom of the sticky hero
-   container so it stays in the same spot for the entire pin duration. */
-.ct2u-hero-experience {
-  position: absolute;
-  left: 50%;
-  bottom: clamp(48px, 8vh, 96px);
-  transform: translateX(-50%);
+.ct2u-hero-media video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.ct2u-hero-copy {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 16px;
-  z-index: 3;
-  pointer-events: auto;
+  text-align: center;
+  /* Min bumped 16→20 so the vertical rhythm doesn't get cramped on short
+     13"/14" MacBook viewports (~720px tall) where 2.2vh collapses. */
+  gap: clamp(20px, 2.2vh, 26px);
 }
-.ct2u-hero-experience-title {
-  font-size: clamp(22px, 2.6vw, 34px);
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  color: rgba(255, 255, 255, 0.96);
+.ct2u-hero-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.85);
+}
+.ct2u-hero-title {
   margin: 0;
-  text-shadow: 0 1px 24px rgba(0, 0, 0, 0.6);
+  font-size: clamp(40px, 5.4vw, 72px);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.04;
+  /* No `color` here — let `.ct2u-aurora-text` paint the gradient via
+     background-clip: text + color: transparent. */
 }
-.ct2u-hero-experience-btn {
-  padding: 14px 26px;
-  border-radius: 10px;
-  color: #fff;
-  font-size: 14px;
-  font-weight: 500;
+.ct2u-hero-sub {
+  margin: 0;
+  font-size: clamp(16px, 1.2vw, 19px);
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.78);
+  max-width: 560px;
+}
+.ct2u-hero-cta {
   display: inline-flex;
   align-items: center;
   gap: 8px;
+  padding: 14px 26px;
+  border-radius: 99px;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  margin-top: 6px;
 }
-@media (max-width: 768px) {
-  .ct2u-hero-experience {
-    bottom: 28px;
-    gap: 12px;
-  }
-}
-
-/* Mobile — keep the staged pin scrub, just shorter and tighter.
-   Padding/font scaling is handled by clamp() on the inner content. */
-@media (max-width: 768px) {
-  .ct2u-hero-pin {
-    /* Shorter pin range so the user doesn't have to swipe past a full viewport
-       on a phone to clear the hero — 1.25 viewports is plenty for the 2-stage
-       crossfade. */
-    min-height: 125vh;
-  }
-  .ct2u-hero-stage {
-    padding: 0 20px;
-  }
-  /* Headline scales itself via clamp() in JSX — give the lines a touch more
-     breathing room so the line-mask reveal doesn't clip descenders. */
-  .ct2u-h1-mask .ct2u-h1-line {
-    padding-bottom: 0.12em;
-    margin-bottom: -0.12em;
-  }
+@media (max-width: 900px) {
+  .ct2u-hero { padding-top: clamp(96px, 14vh, 140px); }
+  .ct2u-hero-shell { grid-template-columns: 1fr; gap: 32px; }
+  .ct2u-hero-media { max-width: 520px; margin: 0 auto; }
 }
 
-/* Reduced-motion is the one true bypass — drop the pin, stack stages
-   naturally, freeze opacities at 1. */
-@media (prefers-reduced-motion: reduce) {
-  .ct2u-hero-pin { min-height: 0; }
-  .ct2u-hero-sticky {
-    position: static;
-    height: auto;
-    overflow: visible;
-    padding: 140px 0 80px;
-  }
-  .ct2u-hero-stage {
-    position: static;
-    opacity: 1 !important;
-    transform: none !important;
-  }
-}
-
-/* === Hero h1 line-mask + scroll-coupled slide (Dragonfly-style) ===
-   Each line is clipped by overflow:hidden. Inner span has TWO motion phases:
-     1. Entrance: animation slides from translateY(110%) → 0 on `.reveal.in`,
-        with a stagger between lines.
-     2. Steady state (after animation ends): transform binds to `--s1-opacity`,
-        so as you scroll and the title fades, lines translate UP out of clip;
-        scrolling back brings them back. */
-.ct2u-h1-mask {
-  /* Neutralise the .reveal translate — only the line-mask handles motion. */
-  transform: none !important;
-}
+/* Hero title line-mask entrance — each line clipped, slides up on mount.
+   Aurora gradient (ct2u-aurora-text) inherits through to .ct2u-h1-line-inner. */
+.ct2u-h1-mask { transform: none !important; }
 .ct2u-h1-mask .ct2u-h1-line {
   display: block;
-  /* Padding-bottom must clear the longest descender (g/p/q/y) at the
-     heaviest font weight in use. Inter Tight bold's "g" tail still clipped
-     at 0.20em — bumping to 0.32em is a generous safety margin that holds
-     even if we push the weight further. The matching negative margin keeps
-     line-to-line spacing identical to the no-padding baseline. */
   overflow: hidden;
   padding-bottom: 0.32em;
   margin-bottom: -0.32em;
@@ -1204,40 +1148,24 @@ body::before {
 }
 .ct2u-h1-mask .ct2u-h1-line-inner {
   display: inline-block;
-  /* Base (steady-state):
-     - transform tied to s1-opacity (slides up out of clip as title fades)
-     - filter is an SVG vertical-only Gaussian blur whose stdDeviation is
-       written by Hero.tsx every frame, combining (1 - s1)² progress-blur
-       with smoothed scroll-velocity for a directional motion-smear feel. */
-  transform: translate3d(0, calc((1 - var(--s1-opacity, 1)) * -110%), 0);
-  filter: url(#ct2u-h1-blur);
-  transition: transform 0.55s cubic-bezier(.22, .61, .36, 1);
   background: inherit;
   -webkit-background-clip: inherit;
   background-clip: inherit;
 }
-
-/* Entrance keyframes — slide up from below clip. Filter stays SVG-driven so
-   there's no CSS-blur ↔ SVG-filter switch glitch when the animation ends. */
 @keyframes ct2u-h1-line-enter {
   0%   { transform: translate3d(0, 110%, 0); }
   100% { transform: translate3d(0, 0, 0); }
 }
-.ct2u-h1-mask.reveal.in .ct2u-h1-line-inner {
-  /* `backwards` holds the 0% keyframe (translateY 110%) during animation-delay
-     and the run; on completion the element falls back to the base style above
-     (scroll-coupled), so the scroll behavior takes over without a jump. */
+.ct2u-h1-mask.in .ct2u-h1-line-inner {
   animation: ct2u-h1-line-enter 1.1s cubic-bezier(.22, .61, .36, 1) backwards;
 }
-.ct2u-h1-mask.reveal.in .ct2u-h1-line:nth-child(2) .ct2u-h1-line-inner {
+.ct2u-h1-mask.in .ct2u-h1-line:nth-child(2) .ct2u-h1-line-inner {
   animation-delay: 0.18s;
 }
-
 @media (prefers-reduced-motion: reduce) {
   .ct2u-h1-mask .ct2u-h1-line-inner {
     animation: none !important;
     transform: none !important;
-    transition: none !important;
   }
 }
 
@@ -1701,435 +1629,354 @@ body::before {
   }
 }
 
-/* === Backdrop canvas (Voronoi panels, fluid shader, etc.) ===
-   Parent must be position: relative + overflow: hidden. The card variant
-   below mounts one canvas inside each strength card. */
-.ct2u-voronoi-backdrop {
+/* === Core strengths — virtuals.io-style horizontal card row ===============
+   5 equal-width cards arranged in a single row. Each card has a media block
+   at the top (stat or icon), a number + title + caption in the middle, and
+   a pill CTA at the bottom. Clicking a card smooth-scrolls to its matching
+   `.ct2u-strengths-pillar` detail block further down the section. */
+.ct2u-strengths-row {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 16px;
+}
+.ct2u-strengths-card {
+  display: flex;
+  flex-direction: column;
+  background: #0E0E12;
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  padding: 14px;
+  text-decoration: none;
+  color: var(--text);
+  min-height: 460px;
+  transition:
+    transform 0.35s cubic-bezier(.22,.61,.36,1),
+    border-color 0.35s ease,
+    background 0.35s ease,
+    box-shadow 0.35s ease;
+}
+.ct2u-strengths-card:hover {
+  transform: translateY(-4px) scale(1.015);
+  border-color: var(--line-strong);
+  background: #131319;
+  box-shadow:
+    0 24px 60px -30px rgba(0, 0, 0, 0.85),
+    0 0 0 1px rgba(227, 81, 238, 0.08);
+}
+.ct2u-strengths-card:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+
+/* Top media block — now holds the looping Pexels video that introduces the
+   strength. Used to host the stat/icon; those moved into the body block. */
+.ct2u-strengths-card-media {
+  position: relative;
+  width: 100%;
+  height: 200px;
+  border-radius: 14px;
+  background: #000000;
+  border: 1px solid var(--line);
+  overflow: hidden;
+  margin-bottom: 18px;
+}
+.ct2u-strengths-card-video {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
+  object-fit: cover;
   display: block;
-  pointer-events: none;
 }
-
-/* Big-box variant: one shared Voronoi canvas spans the entire 2×2 grid; each
-   card is clip-path'd to its Voronoi cell on every frame (driven by JS).
-   The faint card gradient is what's visible inside the clip; the inset
-   between adjacent clip-paths exposes the canvas's glow lines. */
-.ct2u-strength-grid--bigbox {
-  position: relative;
-  /* `visible` so the hovered card's translateY(-6px) lift isn't clipped at
-     the top edge. The canvas + clip-path'd cards never overflow themselves. */
-  overflow: visible;
-  isolation: isolate;
-  gap: 0;
-  /* 3×2 layout for 6 cards (was inheriting 2×2 from .ct2u-strength-grid). */
-  grid-template-columns: 1fr 1fr 1fr;
+/* `contain` shows the full frame (appears smaller, not cropped); black media
+   bg makes the letterboxing seamless. `scale` shrinks it further so it sits
+   smaller within the media block. Applied per-card via the data. */
+.ct2u-strengths-card-video--contain {
+  object-fit: contain;
+  transform: scale(0.72);
 }
-.ct2u-strength-card--voronoi {
-  /* Frosted-glass surface: 12px backdrop blur + a faint diagonal white
-     sheen (3% → 1% alpha). The translucency lets the body's noise overlay
-     and any canvas glow seep through, blurred — the "premium glass" feel. */
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.03),
-    rgba(255, 255, 255, 0.01)
-  );
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: none;
-  border-radius: 0;
-  z-index: 1;
-  /* Initial clip-path before first JS frame paints. */
-  clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
-  /* clip-path skips transitions (changes every frame); transform + opacity
-     + filter animate so the spotlight + depth-of-field hover feels smooth. */
-  transition:
-    clip-path 0s,
-    background 0.4s ease,
-    transform 0.45s cubic-bezier(.22, .61, .36, 1),
-    opacity 0.35s ease,
-    filter 0.35s ease,
-    box-shadow 0.4s ease;
-  /* Chamfer reflection — directional inset highlights only, very subtle.
-     The polygon edge gets these as visible bevel lines once clipped. */
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.05),
-    inset 1px 0 0 rgba(255, 255, 255, 0.02);
-  /* Centred safe-area: 80%-wide left-aligned block lives in the cell middle. */
-  display: flex;
+/* Stat / icon — sits above the title inside the body block. Sized
+   prominently so the figure carries the visual weight on the card.
+   Stacks number on top with the unit ("yours", "days") on a second row. */
+.ct2u-strengths-card-stat-row {
+  display: inline-flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  padding: clamp(26px, 3vw, 48px);
-  min-height: 248px;
+  gap: 2px;
+  margin: 10px 0 14px;
+  filter: drop-shadow(0 0 28px rgba(124, 124, 255, 0.4));
 }
-/* Cursor follow-light — purple radial centred at the cursor's card-local
-   position (`--x` / `--y` are written by onMouseMove in CoreStrengths.tsx).
-   Tighter 180px radius + 3-stop falloff + 8px blur removes the "dirty"
-   muddy edge a single-stop transparent gradient produces. Hidden by
-   default; fades in on hover for a soft "premium" reveal. */
-.ct2u-strength-card--voronoi::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: radial-gradient(
-    180px circle at var(--x) var(--y),
-    rgba(168, 85, 247, 0.25),
-    rgba(168, 85, 247, 0.12) 30%,
-    transparent 60%
-  );
-  filter: blur(8px);
-  opacity: 0;
-  transition: opacity 0.3s ease;
+.ct2u-strengths-card-stat-big {
+  font-family: var(--font-inter-tight), sans-serif;
+  font-size: clamp(45px, 4.5vw, 64px);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  background: linear-gradient(135deg, #FFFFFF 0%, #D9CCFF 55%, var(--brand) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  line-height: 0.95;
 }
-.ct2u-strength-card--voronoi:hover::before,
-.ct2u-strength-card--voronoi:focus-visible::before {
-  opacity: 1;
+.ct2u-strengths-card-stat-unit {
+  font-size: 14px;
+  color: var(--text-2);
+  letter-spacing: 0.04em;
 }
-/* Wow-moment sheen — a thin diagonal light band that sweeps once across
-   the card on hover-enter. Lives on its own <span> so it doesn't fight the
-   energy boundary on ::after. translateX(-100%) → translateX(100%) takes it
-   from off-left to off-right; the card's clip-path keeps it inside the
-   polygon shape so the sheen looks like real light catching a beveled face. */
-.ct2u-strength-card-sweep {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  /* Narrow stops (45–55%) make this a defined LIGHT BEAM rather than a
-     wash. The transparent zones outside the band keep most of the card
-     untouched, so the sweep reads as a single sharp glint. */
-  background: linear-gradient(
-    115deg,
-    transparent 45%,
-    rgba(255, 255, 255, 0.14) 50%,
-    transparent 55%
-  );
-  transform: translateX(-100%);
-}
-@keyframes ct2u-strength-sweep {
-  from { transform: translateX(-100%); }
-  to   { transform: translateX(100%); }
-}
-@media (hover: hover) {
-  .ct2u-strength-grid--bigbox .ct2u-strength-card--voronoi:hover .ct2u-strength-card-sweep,
-  .ct2u-strength-grid--bigbox .ct2u-strength-card--voronoi:focus-visible .ct2u-strength-card-sweep {
-    /* 0.7s — snappy enough to feel like a deliberate moment, not a drift. */
-    animation: ct2u-strength-sweep 0.7s cubic-bezier(.32, 0, .15, 1);
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .ct2u-strength-card-sweep { display: none; }
+.ct2u-strengths-card-icon {
+  color: var(--brand);
+  display: inline-flex;
+  margin: 6px 0 12px;
+  filter: drop-shadow(0 0 24px rgba(227, 81, 238, 0.45));
 }
 
-/* Energy boundary — layered glow for a more "real" feel:
-   • neutral 1px white border at the edge (crisp, no purple bias)
-   • tight 6px white outer halo — sells the cut edge as physically sharp
-   • wide 18px purple outer halo — soft ambient brand light
-   • 12px purple inset glow — slight aura seeping into the panel
-   The pseudo inherits the parent's clip-path, so the inset glow tracks
-   the polygon shape; the rectangular border paints along the unified
-   outer rectangle's edges (interior diagonals are owned by the canvas). */
-.ct2u-strength-card--voronoi::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  /* Trimmed to two layers: tight white edge + soft inset purple breath.
-     Removed the wide 18px purple halo — it was bleeding beyond the cell
-     and competing with the cursor spotlight (also purple). Purple is now
-     reserved for the spotlight + the --hero modifier; non-hero cards have
-     a neutral, contained boundary. */
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow:
-    0 0 6px rgba(255, 255, 255, 0.05),
-    inset 0 0 14px rgba(168, 85, 247, 0.05);
-  transition: box-shadow 0.4s ease, border-color 0.4s ease;
-}
-
-/* Hero variant — applied to card 03 in CoreStrengths.
-   Stronger glass surface, restored purple aura (own bloom, not just on
-   hover), brighter border, slow always-on pulse. Reads as the dominant
-   card at rest, not just on hover. */
-.ct2u-strength-card--hero {
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.06),
-    rgba(168, 85, 247, 0.04)
-  );
-}
-.ct2u-strength-card--hero::after {
-  border-color: rgba(168, 85, 247, 0.22);
-  animation: ct2u-strength-hero-pulse 4.5s ease-in-out infinite;
-}
-@keyframes ct2u-strength-hero-pulse {
-  0%, 100% {
-    box-shadow:
-      0 0 6px rgba(255, 255, 255, 0.05),
-      0 0 22px rgba(168, 85, 247, 0.10),
-      inset 0 0 16px rgba(168, 85, 247, 0.08);
-  }
-  50% {
-    box-shadow:
-      0 0 8px rgba(255, 255, 255, 0.06),
-      0 0 30px rgba(168, 85, 247, 0.18),
-      inset 0 0 20px rgba(168, 85, 247, 0.12);
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .ct2u-strength-card--hero::after {
-    animation: none;
-  }
-}
-/* Apple-style content layout — three vertical anchors:
-     [top]    eyebrow (small uppercase label)
-     [middle] hero element (big stat OR big icon)
-     [bottom] caption (single-line short tagline)
-   Centred horizontally, justify-between vertically so each card has the
-   same eyebrow-top / caption-bottom rhythm regardless of focal type. */
-.ct2u-strength-card--voronoi .ct2u-strength-card-content {
-  width: 100%;
-  max-width: 320px;
+/* Middle text block. */
+.ct2u-strengths-card-body {
+  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-between;
-  gap: 10px;
   text-align: center;
-  min-height: 168px;
+  padding: 4px 8px 0;
 }
-
-/* Eyebrow — small uppercase category label at the top of the card. */
-.ct2u-strength-card-eyebrow {
+.ct2u-strengths-card-num {
   font-size: 11px;
   letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.55);
-  margin: 0;
+  color: var(--text-3);
+  margin-bottom: 6px;
 }
-
-/* Hero — middle row holding either the big stat or the big icon. Flex:1
-   so it takes up the available vertical space and the caption / eyebrow
-   stay anchored to top/bottom. */
-.ct2u-strength-card-hero {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  min-height: 64px;
-}
-
-/* Stat layout — big number + optional small unit aligned baseline-to-baseline */
-.ct2u-strength-card-stat-row {
-  display: inline-flex;
-  align-items: baseline;
-  gap: 8px;
-}
-.ct2u-strength-card-stat-big {
-  font-family: var(--font-inter-tight), var(--font-inter), sans-serif;
-  font-size: clamp(34px, 4vw, 52px);
+.ct2u-strengths-card-title {
+  font-family: var(--font-inter-tight), sans-serif;
+  font-size: 20px;
   font-weight: 600;
-  letter-spacing: -0.03em;
-  line-height: 1;
-  color: rgba(255, 255, 255, 0.96);
-  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.015em;
+  color: var(--text);
+  /* margin-top: auto pushes the title (+ sub below it) to the bottom of the
+     body block so all 5 card titles align on the same baseline regardless of
+     the stat/icon size above. */
+  margin: auto 0 4px;
+  line-height: 1.15;
 }
-.ct2u-strength-card-stat-unit {
-  font-size: clamp(15px, 1.6vw, 20px);
-  font-weight: 500;
-  letter-spacing: -0.01em;
-  color: rgba(255, 255, 255, 0.55);
+.ct2u-strengths-card-sub {
+  font-size: 12.5px;
+  color: var(--text-2);
+  line-height: 1.45;
+  margin: 0 0 6px;
 }
-
-/* Visual layout — big icon centred. */
-.ct2u-strength-card-icon-big {
-  display: flex;
+/* Pill CTA at the bottom — matches the virtuals.io "Open App" button shape. */
+.ct2u-strengths-card-cta {
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: rgba(255, 255, 255, 0.95);
+  gap: 8px;
+  margin-top: 18px;
+  padding: 10px 16px;
+  border: 1px solid var(--line-strong);
+  border-radius: 99px;
+  font-size: 12.5px;
+  letter-spacing: 0.04em;
+  color: var(--text);
+  align-self: center;
+  transition: border-color 0.35s ease, color 0.35s ease;
 }
-.ct2u-strength-card-icon-big svg {
-  stroke-width: 1.2;
+.ct2u-strengths-card-cta > span {
+  color: var(--text-3);
+  transition: transform 0.35s cubic-bezier(.22,.61,.36,1);
+}
+.ct2u-strengths-card:hover .ct2u-strengths-card-cta {
+  border-color: var(--brand);
+  color: var(--brand);
+}
+.ct2u-strengths-card:hover .ct2u-strengths-card-cta > span {
+  color: var(--brand);
+  transform: translateX(3px);
 }
 
-/* Caption — short tagline anchored to the bottom of the card. */
-.ct2u-strength-card-caption {
-  font-size: 15.5px;
-  line-height: 1.55;
-  color: rgba(255, 255, 255, 0.78);
-  max-width: 30ch;
-  margin: 0;
+/* === Pillar detail section — virtuals.io-style two-column cards ==========
+   Each pillar is a large rounded card with a visual on one side and the
+   text content on the other. The image side alternates (image right on
+   odd, image left on even via .ct2u-strengths-pillar--reverse) so the eye
+   ping-pongs down the page. Clicking a card in the top row smooth-scrolls
+   to the matching id="pillar-{slug}" anchor. */
+.ct2u-strengths-pillars {
+  margin-top: 96px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
 }
-
-/* Inline sparkline (used on the "Live performance" card under the stat).
-   Brand-purple gradient stroke, narrow, fills the card width minus a
-   little inset so it visually anchors to the caption row. */
-.ct2u-strength-card-spark {
-  width: 70%;
-  height: 28px;
-  display: block;
-  opacity: 0.85;
+.ct2u-strengths-pillar {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  gap: 40px;
+  align-items: stretch;
+  background: #0E0E12;
+  border: 1px solid var(--line);
+  border-radius: 28px;
+  padding: 28px;
+  scroll-margin-top: 96px;
+  overflow: hidden;
 }
+/* Default (odd cards 01, 03, 05): content LEFT, visual RIGHT. */
+.ct2u-strengths-pillar-content { order: 0; }
+.ct2u-strengths-pillar-visual { order: 1; }
+/* Reverse (even cards 02, 04): visual LEFT, content RIGHT. */
+.ct2u-strengths-pillar--reverse .ct2u-strengths-pillar-visual { order: 0; }
+.ct2u-strengths-pillar--reverse .ct2u-strengths-pillar-content { order: 1; }
 
-/* Single composite exchange watermark (p95 latency card).
-   One PNG centred across the middle band of the card behind the content,
-   with a top-anchored ellipse mask so the image reads bright at the top
-   and fades out toward the bottom — same partner-card watermark feel,
-   just one image instead of four positioned logos. */
-.ct2u-strength-card-bg-logos {
+/* Visual block — left or right depending on `--reverse`. Centered icon or
+   stat on top of a subtle brand-purple radial wash. */
+.ct2u-strengths-pillar-visual {
+  position: relative;
+  min-height: 320px;
+  border-radius: 20px;
+  background: #000000;
+  border: 1px solid var(--line);
+  overflow: hidden;
+}
+.ct2u-strengths-pillar-video {
   position: absolute;
   inset: 0;
-  pointer-events: none;
-  z-index: 0;
-}
-.ct2u-strength-card-bg-logos img {
-  position: absolute;
-  /* Left-anchored, oversized — image bleeds past the LEFT edge with a
-     significant negative offset and extends far past the right (width
-     150%), so it dominates the card's lower band as a wide horizontal
-     watermark. The card's clip-path naturally crops the bleed. */
-  top: 18%;
-  left: -12%;
-  width: 150%;
-  height: auto;
-  max-height: 78%;
+  width: 100%;
+  height: 100%;
+  /* `contain` so titles or fixed compositions in the source video are
+     fully visible. Letterboxing blends into the dark visual surround. */
   object-fit: contain;
-  object-position: left center;
   display: block;
-  opacity: 0.95;
-  filter: grayscale(0%) brightness(1.2);
-  /* Mask centred toward the LEFT (35% horizontal) since the image is now
-     anchored that side — keeps the brightest fade region over the
-     visible portion of the image instead of out past the right edge. */
-  -webkit-mask-image: radial-gradient(
-    ellipse 75% 65% at 35% 35%,
-    #000 35%,
-    transparent 90%
-  );
-  mask-image: radial-gradient(
-    ellipse 75% 65% at 35% 35%,
-    #000 35%,
-    transparent 90%
-  );
-  transition: opacity 0.45s ease, filter 0.45s ease,
-              transform 0.5s cubic-bezier(.22, .61, .36, 1);
 }
 
-@media (hover: hover) {
-  .ct2u-strength-card:hover .ct2u-strength-card-bg-logos img,
-  .ct2u-strength-card:focus-visible .ct2u-strength-card-bg-logos img {
-    opacity: 0.6;
-    filter: grayscale(0%) brightness(1.1) saturate(1.05);
-    transform: scale(1.04);
-  }
+/* Text content block. */
+.ct2u-strengths-pillar-content {
+  display: flex;
+  flex-direction: column;
+  padding: 12px 8px;
+}
+.ct2u-strengths-pillar-head {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 18px;
+}
+.ct2u-strengths-pillar-num {
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: 0.02em;
+}
+.ct2u-strengths-pillar-divider {
+  width: 1px;
+  height: 18px;
+  background: var(--line-strong);
+}
+.ct2u-strengths-pillar-name {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--brand);
+  letter-spacing: 0.01em;
+}
+.ct2u-strengths-pillar-headline {
+  font-family: var(--font-inter-tight), sans-serif;
+  font-size: clamp(22px, 2.4vw, 32px);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  margin: 0 0 16px;
+  color: var(--text);
+}
+.ct2u-strengths-pillar-body {
+  font-size: 15px;
+  color: var(--text-2);
+  line-height: 1.65;
+  margin: 0 0 22px;
+}
+.ct2u-strengths-pillar-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+.ct2u-strengths-pillar-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 14px;
+  border: 1px solid var(--line-strong);
+  border-radius: 99px;
+  font-size: 12.5px;
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.02);
+}
+.ct2u-strengths-pillar-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  align-self: flex-start;
+  padding: 12px 22px;
+  border-radius: 99px;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: transform 0.25s ease;
+}
+.ct2u-strengths-pillar-cta:hover {
+  transform: translateY(-1px);
+}
+.ct2u-strengths-pillar-cta > span {
+  opacity: 0.85;
+  transition: transform 0.25s cubic-bezier(.22,.61,.36,1);
+}
+.ct2u-strengths-pillar-cta:hover > span {
+  transform: translateX(3px);
 }
 
-@media (max-width: 768px) {
-  .ct2u-strength-card-bg-logos img {
-    top: 42%;
-    max-height: 50%;
-  }
-}
-/* Spotlight hover: hovering ANY card dims all four to 0.45 opacity + 0.98
-   scale + a 2px blur (depth-of-field), so the focus pop is dramatic. The
-   actually-hovered card is pulled forward (scale 1.02, lift -6px, z-index 2),
-   restored to full opacity, and re-sharpened (filter: none). */
-@media (hover: hover) {
-  .ct2u-strength-grid--bigbox:hover .ct2u-strength-card--voronoi {
-    opacity: 0.45;
-    transform: scale(0.98);
-    filter: blur(2px);
-  }
-  /* Selector chained with .ct2u-strength-grid--bigbox so this rule reaches
-     specificity (0,3,0) — matching the grid-hover dim rule above — and then
-     wins by source order. Without the chain, the card-hover rule (0,2,0)
-     loses to the grid-hover rule (0,3,0) and the hovered card stays dimmed. */
-  .ct2u-strength-grid--bigbox .ct2u-strength-card--voronoi:hover,
-  .ct2u-strength-grid--bigbox .ct2u-strength-card--voronoi:focus-visible {
-    opacity: 1;
-    transform: scale(1.02) translateY(-6px);
-    filter: none;
-    z-index: 2;
-    border-color: var(--line);
-    background: linear-gradient(
-      135deg,
-      rgba(255, 255, 255, 0.06),
-      rgba(255, 255, 255, 0.02)
-    );
-    box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.08),
-      inset 1px 0 0 rgba(255, 255, 255, 0.04);
-  }
+/* Short-viewport compression — keep cards readable on 13" laptops. */
+@media (max-height: 900px) and (min-width: 1024px) {
+  .ct2u-strengths-card { min-height: 420px; }
+  .ct2u-strengths-card-media { height: 170px; }
 }
 
-/* Short-viewport compression — 13"/14" MacBook screens (~800px viewport
-   height) need the 2-row grid + heading to fit on a single screen. Tighten
-   card min-height, padding, and stat size so both rows are above the fold. */
-@media (max-height: 900px) and (min-width: 769px) {
-  .ct2u-strength-card--voronoi {
-    padding: clamp(20px, 2.4vw, 36px);
-    min-height: 216px;
-  }
-  .ct2u-strength-card--voronoi .ct2u-strength-card-content {
-    min-height: 144px;
-    gap: 8px;
-  }
-  .ct2u-strength-card-stat-big {
-    font-size: clamp(30px, 3.4vw, 46px);
-  }
-  .ct2u-strength-card-hero {
-    min-height: 52px;
-  }
-  .ct2u-strength-card-caption {
-    font-size: 14px;
+/* In-between desktop widths — drop to 4-up before the 3-up tablet layout. */
+@media (max-width: 1200px) {
+  .ct2u-strengths-row {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
-
-/* Mobile: drop the unified box and clip-path; cards stack vertically as
-   regular rounded panels with restored borders + brand-glow hover. */
-@media (max-width: 768px) {
-  .ct2u-strength-grid--bigbox {
+@media (max-width: 1000px) {
+  .ct2u-strengths-row {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+@media (max-width: 900px) {
+  .ct2u-strengths-pillar {
     grid-template-columns: 1fr;
-    overflow: visible;
-    border: none;
-    border-radius: 0;
-    gap: 12px;
+    gap: 24px;
+    padding: 20px;
   }
-  .ct2u-strength-grid--bigbox > .ct2u-voronoi-backdrop {
-    display: none;
+  /* On mobile, always show the visual on top regardless of reverse. */
+  .ct2u-strengths-pillar-visual,
+  .ct2u-strengths-pillar--reverse .ct2u-strengths-pillar-visual { order: 0; }
+  .ct2u-strengths-pillar-content,
+  .ct2u-strengths-pillar--reverse .ct2u-strengths-pillar-content { order: 1; }
+  .ct2u-strengths-pillar-visual {
+    min-height: 220px;
   }
-  .ct2u-strength-card--voronoi {
-    background: #0A0A0C;
-    border: 1px solid var(--line);
+}
+@media (max-width: 760px) {
+  .ct2u-strengths-row {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+  .ct2u-strengths-card { min-height: 0; }
+  .ct2u-strengths-card-media { height: 180px; }
+  .ct2u-strengths-pillar {
+    padding: 14px;
     border-radius: 22px;
-    clip-path: none !important;
-    box-shadow: none;
-    display: flex;
-    align-items: stretch;
-    justify-content: flex-start;
-    padding: 32px;
-    /* Spotlight hover doesn't apply to stacked rectangles. */
-    opacity: 1 !important;
-    transform: none !important;
-    filter: none !important;
-    z-index: auto;
+    gap: 18px;
   }
-  .ct2u-strength-card--voronoi .ct2u-strength-card-content {
-    max-width: none;
-    align-items: flex-start;
-    text-align: left;
-  }
-  .ct2u-strength-card--voronoi .ct2u-strength-card-top {
-    flex-direction: row;
-    justify-content: space-between;
-    width: 100%;
-  }
-  .ct2u-strength-card--voronoi .ct2u-strength-card-title,
-  .ct2u-strength-card--voronoi .ct2u-strength-card-desc {
-    text-align: left;
-  }
+  .ct2u-strengths-pillar-visual { min-height: 200px; }
+  .ct2u-strengths-pillar-content { padding: 8px 4px; }
+  .ct2u-strengths-pillars { gap: 24px; margin-top: 64px; }
+  .ct2u-strengths-pillar-head { gap: 10px; margin-bottom: 14px; }
+  .ct2u-strengths-pillar-num { font-size: 18px; }
+  .ct2u-strengths-pillar-name { font-size: 15px; }
 }
 
 /* === Tutorials — Apple-style guided walkthrough =========================
@@ -2140,14 +1987,15 @@ body::before {
    layers for a smooth opacity crossfade between steps, with a glass pill
    pair (NOW PLAYING + STEP X/04) overlaying the corner. */
 
+/* — Desktop grid — accordion on the left, DcaCard preview on the right. */
 .ct2u-tut-grid {
   display: grid;
-  grid-template-columns: 320px 1fr;
-  gap: 24px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 48px;
   align-items: flex-start;
 }
 
-/* — Tab list — */
+/* — Accordion container. */
 .ct2u-tut-tabs {
   display: flex;
   flex-direction: column;
@@ -2259,19 +2107,71 @@ body::before {
   50%      { opacity: 0.5; transform: scale(0.65); }
 }
 
+.ct2u-tut-tab-titlerow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
 .ct2u-tut-tab-title {
-  font-size: 14px;
+  font-size: 18px;
   font-weight: 500;
-  line-height: 1.4;
+  line-height: 1.35;
   letter-spacing: -0.005em;
   color: var(--text-2);
   transition: color 0.3s ease, font-size 0.3s ease, font-weight 0.3s ease;
 }
 .ct2u-tut-tab--active .ct2u-tut-tab-title {
   color: #fff;
-  font-size: 16px;
+  font-size: 24px;
   font-weight: 600;
   letter-spacing: -0.015em;
+}
+/* Chevron — rotates 180° when the tab expands. Slightly larger when active
+   so it visually pairs with the bumped-up active title size (24px). */
+.ct2u-tut-tab-chev {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-3);
+  flex-shrink: 0;
+  transition: transform 0.35s cubic-bezier(.22, .61, .36, 1), color 0.3s ease;
+}
+.ct2u-tut-tab-chev svg {
+  width: 18px;
+  height: 18px;
+  transition: width 0.3s ease, height 0.3s ease;
+}
+.ct2u-tut-tab--active .ct2u-tut-tab-chev {
+  color: var(--brand);
+  transform: rotate(180deg);
+}
+.ct2u-tut-tab--active .ct2u-tut-tab-chev svg {
+  width: 22px;
+  height: 22px;
+}
+/* Expanded panel — rendered only inside the active tab. Holds the inline
+   video preview + description. Wrapped together so the fade-in animates
+   the whole block. */
+.ct2u-tut-tab-expanded {
+  margin-top: 14px;
+  animation: ct2u-tut-tab-expand 0.5s cubic-bezier(.22, .61, .36, 1);
+}
+@keyframes ct2u-tut-tab-expand {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+/* Inline video preview — `.ct2u-tut-tab-video` is the outer dark frame;
+   `.ct2u-tut-tab-video-inner` is sized by its inline `aspect-ratio` so the
+   source video fits exactly. Desktop hides the whole block (display: none
+   rule further down); mobile media query defines all visible styling. */
+
+/* Description sits below the video. */
+.ct2u-tut-tab-desc {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text-2);
+  margin: 14px 0 0;
 }
 
 /* Progress bar — only present on the active tab. The animation duration
@@ -2309,12 +2209,8 @@ body::before {
   to   { transform: scaleX(1); }
 }
 
-/* — Stage (right column) — phone-shaped frame ============================
-   Container is transparent; the phone bezel + glow live on the video element
-   directly so the caption block below (.ct2u-tut-stage-info) sits cleanly
-   outside the frame instead of inside the bezel. `position: relative` here
-   anchors the decorative polygon-mesh backdrop (.ct2u-tut-backdrop) so it
-   fills the stage area behind the phone. */
+/* — Stage (right column) — DCA card preview. Desktop-only; hidden on
+   mobile, where the video appears inline in the active accordion item. */
 .ct2u-tut-stage {
   position: relative;
   background: transparent;
@@ -2323,218 +2219,104 @@ body::before {
   flex-direction: column;
   align-items: center;
 }
-
-/* Polygon-mesh backdrop — sits behind the phone, ignores clicks, scales to
-   fill the column. Edges and nodes are drawn in the inline SVG; the wrapper
-   handles positioning + safe overflow clipping. */
-.ct2u-tut-backdrop {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  overflow: hidden;
-}
-.ct2u-tut-backdrop svg {
+.ct2u-dca {
   width: 100%;
-  height: 100%;
-  display: block;
-}
-
-/* Phone + caption sit above the backdrop. */
-.ct2u-tut-stage > .ct2u-tut-stage-video,
-.ct2u-tut-stage > .ct2u-tut-stage-info {
-  position: relative;
-  z-index: 1;
-}
-
-@media (max-width: 768px) {
-  /* Hide the mesh on mobile — the column is too narrow for the lines to
-     read cleanly, and they crowd the phone. */
-  .ct2u-tut-backdrop { display: none; }
-}
-.ct2u-tut-stage-video {
-  position: relative;
-  /* Portrait phone aspect — close to a modern device's 9:19.5 screen. */
-  aspect-ratio: 9 / 19;
-  width: 100%;
-  max-width: 340px;
-  background: #000;
-  /* Phone-like rounded rectangle. Following the same chrome pattern as the
-     HeroDashboard mockup: visible white hairline border + soft outer ring
-     for the silver-edge highlight + grounding drop shadow with a faint
-     brand-purple bloom underneath. `overflow: hidden` clips the inner
-     video to the rounded corners. */
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  border-radius: 44px;
-  overflow: hidden;
+  max-width: 560px;
+  background: #15151B;
+  border: 1px solid var(--line-strong);
+  border-radius: 22px;
+  padding: 14px;
   box-shadow:
-    0 0 0 1px rgba(255, 255, 255, 0.06),
-    0 30px 80px -20px rgba(0, 0, 0, 0.85),
-    0 80px 200px -40px rgba(227, 81, 238, 0.18);
+    0 30px 80px -30px rgba(0, 0, 0, 0.85),
+    0 80px 200px -50px rgba(124, 124, 255, 0.22);
 }
-.ct2u-tut-video {
+.ct2u-dca-body {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  background: #000;
+  border-radius: 14px;
+  overflow: hidden;
+}
+.ct2u-dca-video {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
-  /* `cover` so vertical phone-recorded clips fill the screen edge-to-edge.
-     If a legacy 16:9 clip is supplied it will be cropped centre-wise — swap
-     videos to portrait recordings for the cleanest look. */
-  object-fit: cover;
+  object-fit: contain;
   display: block;
   transition: opacity 0.45s ease;
 }
-.ct2u-tut-pill,
-.ct2u-tut-step {
-  position: absolute;
-  top: 16px;
-  font-size: 10.5px;
-  letter-spacing: 0.18em;
-  background: rgba(0, 0, 0, 0.55);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 99px;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-}
-.ct2u-tut-pill {
-  left: 16px;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 10px 6px 8px;
-  color: rgba(255, 255, 255, 0.85);
-}
-.ct2u-tut-pill-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 99px;
-  background: var(--brand);
-  box-shadow: 0 0 8px var(--brand);
-  animation: ct2u-tut-pulse 1.6s ease-in-out infinite;
-}
-.ct2u-tut-step {
-  right: 16px;
-  padding: 6px 10px;
-  color: rgba(255, 255, 255, 0.65);
-}
-
-.ct2u-tut-stage-info {
-  /* Sits below the phone frame now — centered, no top border (the bezel
-     supplies its own visual edge above). */
-  padding: 28px 16px 0;
-  text-align: center;
-  max-width: 520px;
-  /* `key` prop on the parent re-mounts this on every step change, so the
-     fade-in keyframe re-fires — text feels intentionally swapped. */
-  animation: ct2u-tut-info-in 0.5s cubic-bezier(.22, .61, .36, 1);
-}
-@keyframes ct2u-tut-info-in {
-  from { opacity: 0; transform: translateY(8px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-.ct2u-tut-stage-title {
-  font-family: var(--font-inter-tight), sans-serif;
-  font-size: 24px;
-  font-weight: 500;
-  letter-spacing: -0.015em;
-  margin: 0 0 8px;
-}
-.ct2u-tut-stage-desc {
-  font-size: 14px;
-  color: var(--text-2);
-  line-height: 1.65;
-  margin: 0 auto;
-}
+/* Inline `.ct2u-tut-tab-video` is hidden on desktop — only shows on mobile. */
+.ct2u-tut-tab-video { display: none; }
 
 @media (prefers-reduced-motion: reduce) {
-  .ct2u-tut-tab-now-dot,
-  .ct2u-tut-pill-dot {
-    animation: none;
-  }
+  .ct2u-tut-tab-now-dot { animation: none; }
   .ct2u-tut-tab-progress > span {
     animation: none;
     transform: scaleX(0);
   }
-  .ct2u-tut-stage-info {
-    animation: none;
-  }
-  .ct2u-tut-video {
-    transition: none;
-  }
+  .ct2u-tut-tab-expanded { animation: none; }
 }
 
-/* Short-viewport compression — 13"/14" MacBook screens. The portrait phone
-   stage is already compact; on short screens we shrink the phone slightly
-   and tighten tab + caption padding so the section still fits above the
-   fold. */
+/* Short-viewport compression — 13"/14" MacBook screens. */
 @media (max-height: 900px) and (min-width: 769px) {
-  .ct2u-tut-stage-video {
-    max-width: 280px;
-  }
-  .ct2u-tut-stage-info {
-    padding: 20px 16px 0;
-  }
-  .ct2u-tut-stage-title {
-    font-size: 20px;
-  }
-  .ct2u-tut-stage-desc {
-    font-size: 13.5px;
-    line-height: 1.55;
-  }
-  .ct2u-tut-tab {
-    padding: 11px 14px 13px;
-  }
-  .ct2u-tut-tab--active {
-    padding: 14px 16px 18px;
-  }
-  .ct2u-tut-tab-title {
-    font-size: 13.5px;
-  }
-  .ct2u-tut-tab--active .ct2u-tut-tab-title {
-    font-size: 15px;
-  }
-  .ct2u-tut-tab-row {
-    margin-bottom: 6px;
-  }
+  .ct2u-tut-tab { padding: 12px 16px 14px; }
+  .ct2u-tut-tab--active { padding: 14px 16px 18px; }
+  .ct2u-tut-tab-title { font-size: 16px; }
+  .ct2u-tut-tab--active .ct2u-tut-tab-title { font-size: 20px; }
 }
 
-/* Mobile: stack vertically, drop the pills' backdrop-filter (lag), tighter type. */
+/* Mobile: collapse to single column, hide the right DcaCard, show the
+   inline tutorial video inside the active accordion item (3commas-style). */
 @media (max-width: 768px) {
   .ct2u-tut-grid {
     grid-template-columns: 1fr;
-    gap: 14px;
+    gap: 20px;
   }
-  .ct2u-tut-tabs {
-    padding: 4px;
+  .ct2u-tut-stage { display: none; }
+  /* Full-bleed video — 4:3 aspect gives more vertical presence; `contain`
+     keeps the landscape source from cropping (any letterbox blends into the
+     black inner bg). */
+  .ct2u-tut-tab-video {
+    /* Outer dark frame — extends past the tab padding (14px) on each side.
+       The 14px padding shows as visible frame around the video. */
+    display: block;
+    width: calc(100% + 28px);
+    margin: 4px -14px 0;
+    padding: 14px;
+    background: linear-gradient(135deg, #0F0F14 0%, #08080B 100%);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    box-sizing: border-box;
   }
-  .ct2u-tut-tab {
-    padding: 12px 14px 14px;
+  /* Inner wrapper carries the source aspect-ratio so the box sizes height
+     correctly from width — no cropping, no letterbox. */
+  .ct2u-tut-tab-video-inner {
+    position: relative;
+    width: 100%;
+    background: #000;
+    border-radius: 8px;
+    overflow: hidden;
   }
-  .ct2u-tut-tab--active {
-    padding: 14px 14px 18px;
+  .ct2u-tut-tab-video-inner video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
   }
-  .ct2u-tut-tab-title {
-    font-size: 13.5px;
-  }
-  .ct2u-tut-tab--active .ct2u-tut-tab-title {
-    font-size: 14.5px;
-  }
-  .ct2u-tut-pill,
-  .ct2u-tut-step {
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-    background: rgba(0, 0, 0, 0.7);
-    font-size: 9.5px;
-  }
-  .ct2u-tut-stage-info {
-    padding: 18px 18px 20px;
-  }
-  .ct2u-tut-stage-title {
-    font-size: 19px;
-  }
-  .ct2u-tut-stage-desc {
-    font-size: 13px;
-  }
+  .ct2u-tut-tabs { padding: 4px; }
+  .ct2u-tut-tab { padding: 12px 14px 14px; }
+  .ct2u-tut-tab--active { padding: 14px 14px 18px; }
+  .ct2u-tut-tab-num { font-size: 11.5px; padding: 4px 10px; }
+  .ct2u-tut-tab-titlerow { gap: 8px; }
+  .ct2u-tut-tab-title { font-size: 14.5px; }
+  .ct2u-tut-tab--active .ct2u-tut-tab-title { font-size: 17px; }
+  .ct2u-tut-tab-desc { font-size: 13px; }
+  .ct2u-tut-tab-chev svg { width: 14px; height: 14px; }
+  .ct2u-tut-tab--active .ct2u-tut-tab-chev svg { width: 18px; height: 18px; }
 }
 
 /* === Leaderboard row — responsive layout =================================
@@ -2591,8 +2373,7 @@ body::before {
 }
 .ct2u-app-ann-eyebrow {
   font-size: 12px;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
+  letter-spacing: 0.06em;
   margin: 0;
 }
 .ct2u-app-ann-link {
@@ -3475,24 +3256,27 @@ body::before {
   align-items: center;
   gap: 12px;
   padding: 12px 14px;
-  border: 1px solid var(--line);
+  border: 1px solid rgba(227, 81, 238, 0.22);
   border-radius: 12px;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.025), rgba(255, 255, 255, 0.005));
+  /* Solid dark base + a much softer brand-pink diagonal wash so the card
+     reads darker overall, with only a hint of brand accent. */
+  background-color: #0A0A0C;
+  background-image: linear-gradient(
+    135deg,
+    rgba(227, 81, 238, 0.10),
+    transparent 55%
+  );
   transition:
     border-color 0.25s ease,
     transform 0.2s ease,
-    background 0.25s ease,
     box-shadow 0.25s ease;
   color: inherit;
   text-decoration: none;
 }
 .ct2u-guard-card:hover {
-  border-color: rgba(227, 81, 238, 0.32);
-  transform: translateY(-1px);
-  background:
-    linear-gradient(180deg, rgba(227, 81, 238, 0.04), rgba(227, 81, 238, 0.01));
-  box-shadow: 0 10px 24px -16px rgba(227, 81, 238, 0.45);
+  border-color: rgba(227, 81, 238, 0.5);
+  transform: translateY(-2px);
+  box-shadow: 0 18px 48px -28px rgba(227, 81, 238, 0.45);
 }
 .ct2u-guard-card-icon-wrap {
   flex-shrink: 0;
@@ -3583,7 +3367,10 @@ body::before {
   color: var(--text-2);
   font-style: italic;
   font-weight: 400;
-  font-size: 0.65em;
+  font-size: clamp(14px, 1.4vw, 18px);
+  line-height: 1.5;
+  display: block;
+  margin-top: 0.6em;
 }
 .ct2u-hero-stage-3-dash {
   flex-shrink: 0;

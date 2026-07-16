@@ -113,8 +113,7 @@ export default function Partners({ accent = ACCENT }: { accent?: string }) {
           <p
             style={{
               fontSize: 12,
-              letterSpacing: "0.18em",
-              textTransform: "uppercase",
+              letterSpacing: "0.06em",
               color: accent,
               margin: 0,
               marginBottom: 22,
@@ -127,14 +126,29 @@ export default function Partners({ accent = ACCENT }: { accent?: string }) {
               fontSize: "clamp(44px, 5.5vw, 72px)",
               letterSpacing: "-0.025em",
               marginBottom: 18,
+              whiteSpace: "pre-line",
             }}
           >
             {t("partners.title.line1")}
-            <br />
-            <span style={{ color: "var(--text-2)", fontStyle: "italic", fontWeight: 400, fontSize: "0.65em" }}>
-              {t("partners.title.line2")}
-            </span>
           </h2>
+          <p
+            style={{
+              /* Matches `.ct2u-hero-stage-3-title-italic` — that span lives
+                 inside an h2 with `clamp(34px, 4vw, 52px)`, so its 0.5em
+                 resolves to `clamp(17px, 2vw, 26px)` here. */
+              fontSize: "clamp(17px, 2vw, 26px)",
+              color: "var(--text-2)",
+              fontStyle: "italic",
+              fontWeight: 400,
+              lineHeight: 1.45,
+              maxWidth: 720,
+              margin: "0 auto",
+            }}
+          >
+            {t("partners.subtitle.line1")}
+            <br />
+            {t("partners.subtitle.line2")}
+          </p>
         </div>
 
         <div className="ct2u-partner-grid">

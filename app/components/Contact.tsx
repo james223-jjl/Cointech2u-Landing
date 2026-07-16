@@ -77,8 +77,7 @@ export default function Contact({ accent = ACCENT }: { accent?: string }) {
           <p
             style={{
               fontSize: 12,
-              letterSpacing: "0.18em",
-              textTransform: "uppercase",
+              letterSpacing: "0.06em",
               color: accent,
               margin: 0,
               marginBottom: 22,

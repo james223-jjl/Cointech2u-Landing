@@ -28,31 +28,53 @@ const en: Dict = {
   "hero.title.line2.lead": "not",
   "hero.title.line2.emph": "emotion",
   "hero.subtitle.pre":
-    "Stay ahead of every market move with AI-powered precision, real-time analytics, and verified intelligence — built for traders across",
-  "hero.subtitle.countries": "100+ countries",
-  "hero.subtitle.post": ".",
+    "CoinTech2u is an AI-powered crypto trading platform that runs automated strategies on",
+  "hero.subtitle.countries": "your own exchange account",
+  "hero.subtitle.post": "",
   "hero.cta.viewLive": "View live performance",
   "hero.experience.title": "Experience Now",
   "hero.experience.getStarted": "Get started",
 
   // CoreStrengths cards
-  "core.card.custody.eyebrow": "Custody",
+  "core.card.custody.eyebrow": "Profit Guard",
   "core.card.custody.unit": "yours",
-  "core.card.custody.caption": "Funds stay in your exchange. Zero third-party custody.",
-  "core.card.ai.eyebrow": "AI engine",
-  "core.card.ai.caption": "Adaptive intelligence recalibrates with every volatility regime.",
-  "core.card.live2022.eyebrow": "Live since 2022",
+  "core.card.custody.caption": "Your profit matters",
+  "core.card.ai.eyebrow": "Equity Guard",
+  "core.card.ai.caption": "Designed to protect your portfolio equity",
+  "core.card.live2022.eyebrow": "Zero Custody Risk",
   "core.card.live2022.unit": "days",
-  "core.card.live2022.caption": "Audited live performance, every metric from production.",
-  "core.card.latency.eyebrow": "p95 latency",
+  "core.card.live2022.caption": "Your funds never leave your own exchange account",
+  "core.card.latency.eyebrow": "AI Intelligence",
   "core.card.latency.unit": "ms",
-  "core.card.latency.caption":
-    "Across OKX, Bitget, Bybit, Binance — instant execution.",
+  "core.card.latency.caption": "Adaptive AI that never stops learning",
   "core.card.always.eyebrow": "Always on",
-  "core.card.always.caption": "Continuous market coverage. The engine never sleeps.",
-  "core.card.discipline.eyebrow": "Discipline",
+  "core.card.always.caption": "Continuous market coverage. The engine never sleeps",
+  "core.card.discipline.eyebrow": "Proven Results",
   "core.card.discipline.caption":
-    "Position sizing, drawdown limits, exposure caps — coded, not emotional.",
+    "A consistent 98% win rate, backed by verifiable data",
+  // CoreStrengths pillar long-form bodies (shown in the detail section below
+  // the card row when a card is clicked).
+  "core.card.custody.body":
+    "Profit Guard is a smart automated risk-management feature that helps traders secure profits while maintaining stable trading capital. Once your portfolio reaches a predefined equity target, the system automatically transfers net profits from your Trading Wallet to your Funding Wallet, preventing overexposure, excessive compounding, and unnecessary market risk. As one of the core features of CoinTech2u 3.0, Profit Guard is designed to improve long-term trading sustainability by protecting realised gains while allowing strategies to continue running efficiently",
+  "core.card.ai.body":
+    "Equity Guard is an advanced portfolio-level risk management feature designed to protect your capital during extreme market volatility. By setting a predefined equity cut-loss level, the system automatically closes all open positions and stops trading once your portfolio equity falls below your risk threshold, preventing further losses and uncontrolled drawdowns. As one of the core protection mechanisms in CoinTech2u 3.0, Equity Guard helps traders preserve capital, maintain disciplined risk management, and ensure long-term trading sustainability.",
+  "core.card.live2022.body":
+    "CoinTech2u is connected to your account through a read-only and trade-only API — it can analyse markets and place trades, but it cannot withdraw a single fund from your exchange. Withdrawal access is rejected by design. The exchange holds the assets; you hold the keys, but let CoinTech2u handle the trades and profit for you.",
+  "core.card.latency.body":
+    "The execution engine analyses market volatility, order-book depth, and price action around the clock — adjusting entries, exits, and position sizing to match conditions in real time. Trained on four years of live trading data, retrained continuously.",
+  "core.card.discipline.body":
+    "Backed by verifiable trading data and real user performance — CoinTech2u's AI strategies have achieved a consistent 98% win rate, delivering stable and sustainable profits for users across 100+ countries.",
+  // CoreStrengths small card-row highlights (independent of the pillar blocks).
+  "core.hl.1.title": "Equity Guard",
+  "core.hl.1.sub": "Capital safeguard",
+  "core.hl.2.title": "Profit Guard",
+  "core.hl.2.sub": "Profit secured from trading",
+  "core.hl.3.title": "Zero custody risk",
+  "core.hl.3.sub": "Your funds, always yours",
+  "core.hl.4.title": "AI Intelligence",
+  "core.hl.4.sub": "Adaptive AI, continuously working",
+  "core.hl.5.title": "Proven results",
+  "core.hl.5.sub": "Win rate",
 
   // Nav
   "nav.liveTrading": "Live Trading",
@@ -78,8 +100,8 @@ const en: Dict = {
 
   // LivePerformance section
   "livePerf.eyebrow": "Live trading",
-  "livePerf.title.line1": "Real account.",
-  "livePerf.title.line2": "Real performance, in real time.",
+  "livePerf.title.line1": "Live account, Live data",
+  "livePerf.title.line2": "Everything on this dashboard is live data from an active Cointech2u account, not a marketing mockup. Reload the page anytime to see the numbers move",
   "livePerf.counter.days": "Days",
   "livePerf.counter.hours": "Hours",
   "livePerf.counter.minutes": "Minutes",
@@ -91,10 +113,10 @@ const en: Dict = {
   "livePerf.guard.profit.desc": "Automatically lock in profits as positions grow.",
 
   // Leaders section
-  "leaders.title.line1": "Real traders.",
-  "leaders.title.line2": "Real profits.",
+  "leaders.title.line1": "Real traders. Real profits",
+  "leaders.title.line2": "Real profits",
   "leaders.lede":
-    "Live profit rankings across the CoinTech2u network. Swipe between Today, this Month, and All-Time to see who's ahead.",
+    "Live Profit ranking across the CoinTech2u network",
   "leaders.tab.today": "Today",
   "leaders.tab.today.sub": "24h profit",
   "leaders.tab.monthly": "Monthly",
@@ -207,53 +229,55 @@ const en: Dict = {
     "We couldn't reach the service right now. Please try again shortly.",
 
   // Partners section
-  "partners.eyebrow": "Official partners",
-  "partners.title.line1": "Connected to the world's",
-  "partners.title.line2": "leading exchanges.",
+  "partners.eyebrow": "Official Partners",
+  "partners.title.line1": "Connected to Leading\nExchange",
+  "partners.title.line2": "leading exchanges",
+  "partners.subtitle.line1": "Connected by secure API, funds stay in your exchange",
+  "partners.subtitle.line2": "Your funds, your control",
 
   // CoreStrengths section
-  "core.eyebrow": "Core strengths",
-  "core.title.line1": "AI-driven insights.",
-  "core.title.line2": "Smart analysis. Verified results.",
+  "core.eyebrow": "Core feature",
+  "core.title.line1": "Reason to start using CoinTech2u",
+  "core.title.line2": "Five things every CoinTech2u user gets — built in from day one",
 
   // Tutorials section
-  "tut.eyebrow": "From setup to success",
-  "tut.title.line1": "Walkthrough videos.",
-  "tut.title.line2": "Setup, end to end.",
+  "tut.eyebrow": "From Set up to First Trade",
+  "tut.title.line1": "Setup your fully automated\ntrading",
+  "tut.title.line2": "In 4 easy steps",
 
   // Leaders section
-  "leaders.eyebrow": "Live leaderboard",
+  "leaders.eyebrow": "Live Leaderboard",
 
   // Insights / News section
   "insights.eyebrow": "Insights, News & Market Updates",
-  "insights.title.line1": "Discover trends.",
-  "insights.title.line2": "Learn from data. Stay ahead.",
+  "insights.title.line1": "Discover trends",
+  "insights.title.line2": "Learn from data. Stay ahead",
   "insights.lede":
-    "Research notes, market briefings, and product updates from the CoinTech2u team.",
+    "Research notes, market briefings, and product updates from the CoinTech2u team",
   "insights.rail.title": "Latest market updates",
-  "insights.announcements.eyebrow": "Latest announcements",
+  "insights.announcements.eyebrow": "Latest Announcements",
 
   // AppDownload section
-  "app.eyebrow": "Mobile app",
+  "app.eyebrow": "Mobile App",
   "app.title.line1": "Trade anywhere,",
-  "app.title.line2": "anytime.",
+  "app.title.line2": "anytime",
 
   // FAQ section
   "faq.eyebrow": "FAQ",
   "faq.title.line1": "Questions, answered",
-  "faq.title.line2": "plainly.",
-  "faq.lede": "Instant answers on strategy, safety, setup, and performance.",
+  "faq.title.line2": "plainly",
+  "faq.lede": "Instant answers on strategy, safety, setup, and performance",
 
   // Contact section
   "contact.eyebrow": "Contact",
   "contact.title.line1": "Let's connect",
-  "contact.title.line2": "and grow together.",
-  "contact.lede": "Drop your details — our team will be in touch.",
+  "contact.title.line2": "and grow together",
+  "contact.lede": "Drop your details — our team will be in touch",
 
   // Archive pages
   "arch.news.eyebrow": "News & Market Updates",
   "arch.news.title.line1": "Crypto news,",
-  "arch.news.title.line2": "briefed for you.",
+  "arch.news.title.line2": "briefed for you",
   "arch.news.lede":
     "Curated reading — listings, regulation, macro signals, and the trends behind the moves.",
   "arch.ann.eyebrow": "Announcements",
@@ -272,30 +296,50 @@ const zhCN: Dict = {
   "hero.title.line2.lead": "而非",
   "hero.title.line2.emph": "情绪",
   "hero.subtitle.pre":
-    "凭借 AI 驱动的精准、实时分析与可验证的洞察,在每一次市场波动中保持领先 —— 服务于",
-  "hero.subtitle.countries": "100+ 个国家",
-  "hero.subtitle.post": "的交易者。",
+    "CoinTech2u 是一个 AI 驱动的加密交易平台,在",
+  "hero.subtitle.countries": "您自己的交易所账户",
+  "hero.subtitle.post": "上运行自动化策略",
   "hero.cta.viewLive": "查看实时表现",
   "hero.experience.title": "立即体验",
   "hero.experience.getStarted": "立即开始",
 
   // CoreStrengths cards
-  "core.card.custody.eyebrow": "资金托管",
+  "core.card.custody.eyebrow": "盈利防护",
   "core.card.custody.unit": "归您所有",
-  "core.card.custody.caption": "资金留在您的交易所。零第三方托管。",
-  "core.card.ai.eyebrow": "AI 引擎",
-  "core.card.ai.caption": "自适应智能在每个波动周期中重新校准。",
-  "core.card.live2022.eyebrow": "自 2022 年运行",
+  "core.card.custody.caption": "您的利润很重要",
+  "core.card.ai.eyebrow": "资产保护",
+  "core.card.ai.caption": "为保护您的投资组合净值而设计",
+  "core.card.live2022.eyebrow": "零托管风险",
   "core.card.live2022.unit": "天",
-  "core.card.live2022.caption": "经审计的实时表现,每项指标均来自生产。",
-  "core.card.latency.eyebrow": "P95 延迟",
+  "core.card.live2022.caption": "您的资金始终不离开您自己的交易所账户",
+  "core.card.latency.eyebrow": "AI 智能",
   "core.card.latency.unit": "毫秒",
-  "core.card.latency.caption": "覆盖 OKX、Bitget、Bybit、Binance —— 即时执行。",
+  "core.card.latency.caption": "永不停止学习的自适应 AI",
   "core.card.always.eyebrow": "全天候运行",
-  "core.card.always.caption": "持续市场覆盖。引擎永不停歇。",
-  "core.card.discipline.eyebrow": "纪律性",
+  "core.card.always.caption": "持续市场覆盖。引擎永不停歇",
+  "core.card.discipline.eyebrow": "经验证的成果",
   "core.card.discipline.caption":
-    "仓位规模、回撤限制、敞口上限 —— 由代码定义,而非情绪。",
+    "经可验证数据支持的 98% 持续胜率",
+  "core.card.custody.body":
+    "盈利防护是一项智能自动化风险管理功能,帮助交易者在保持稳定交易资金的同时锁定利润。一旦您的投资组合达到预设的净值目标,系统会自动将净利润从交易钱包转移到资金钱包,防止过度敞口、过度复利和不必要的市场风险。作为 CoinTech2u 3.0 的核心功能之一,盈利防护旨在通过保护已实现收益、同时让策略继续高效运行,来提升长期交易的可持续性",
+  "core.card.ai.body":
+    "资产保护是一项高级的投资组合层级风险管理功能,旨在极端市场波动期间保护您的资金。通过设定预设的净值止损水平,一旦您的投资组合净值跌破风险阈值,系统会自动平掉所有未平仓头寸并停止交易,防止进一步亏损和失控的回撤。作为 CoinTech2u 3.0 的核心保护机制之一,资产保护帮助交易者保全资金、保持有纪律的风险管理,并确保长期交易的可持续性。",
+  "core.card.live2022.body":
+    "CoinTech2u 通过只读和只交易的 API 连接到您的账户 —— 它可以分析市场并下单交易,但无法从您的交易所提取任何资金。提币权限按设计被拒绝。资产由交易所托管;您持有密钥,让 CoinTech2u 为您处理交易和盈利。",
+  "core.card.latency.body":
+    "执行引擎全天候分析市场波动、订单簿深度和价格行为 —— 实时调整入场、出场和仓位规模,以匹配市场条件。基于四年实盘交易数据训练,并持续再训练。",
+  "core.card.discipline.body":
+    "基于可验证的交易数据和真实用户表现 —— CoinTech2u 的 AI 策略已实现持续 98% 的胜率,为遍布 100 多个国家的用户带来稳定且可持续的利润。",
+  "core.hl.1.title": "资产保护",
+  "core.hl.1.sub": "资本保障",
+  "core.hl.2.title": "盈利防护",
+  "core.hl.2.sub": "锁定交易利润",
+  "core.hl.3.title": "零托管风险",
+  "core.hl.3.sub": "资金始终归您所有",
+  "core.hl.4.title": "AI 智能",
+  "core.hl.4.sub": "自适应 AI 持续运行",
+  "core.hl.5.title": "经验证的成果",
+  "core.hl.5.sub": "胜率",
 
   // Nav
   "nav.liveTrading": "实时交易",
@@ -321,8 +365,8 @@ const zhCN: Dict = {
 
   // LivePerformance
   "livePerf.eyebrow": "实时交易",
-  "livePerf.title.line1": "真实账户。",
-  "livePerf.title.line2": "实时真实表现。",
+  "livePerf.title.line1": "实时账户,实时数据",
+  "livePerf.title.line2": "此仪表板上的所有内容均为来自活跃 Cointech2u 账户的实时数据,而非营销模拟。随时重新载入页面即可看到数字变动",
   "livePerf.counter.days": "天",
   "livePerf.counter.hours": "小时",
   "livePerf.counter.minutes": "分钟",
@@ -334,10 +378,10 @@ const zhCN: Dict = {
   "livePerf.guard.profit.desc": "随着仓位增长自动锁定利润。",
 
   // Leaders
-  "leaders.title.line1": "真实交易者。",
-  "leaders.title.line2": "真实利润。",
+  "leaders.title.line1": "真实交易者。真实利润",
+  "leaders.title.line2": "真实利润",
   "leaders.lede":
-    "CoinTech2u 网络中的实时利润排行。在今日、本月与全部时间之间滑动查看谁领先。",
+    "CoinTech2u 网络中的实时利润排行",
   "leaders.tab.today": "今日",
   "leaders.tab.today.sub": "24 小时利润",
   "leaders.tab.monthly": "本月",
@@ -443,52 +487,54 @@ const zhCN: Dict = {
 
   // Partners
   "partners.eyebrow": "官方合作伙伴",
-  "partners.title.line1": "连接全球",
-  "partners.title.line2": "领先交易所。",
+  "partners.title.line1": "连接领先\n交易所",
+  "partners.title.line2": "领先交易所",
+  "partners.subtitle.line1": "通过安全 API 连接,资金始终保留在您的交易所",
+  "partners.subtitle.line2": "您的资金,您来掌控。",
 
   // CoreStrengths
-  "core.eyebrow": "核心优势",
-  "core.title.line1": "AI 驱动的洞察。",
-  "core.title.line2": "智能分析，可验证的成果。",
+  "core.eyebrow": "核心功能",
+  "core.title.line1": "开始使用 CoinTech2u 的理由",
+  "core.title.line2": "每位 CoinTech2u 用户从第一天起就拥有的五项核心能力",
 
   // Tutorials
-  "tut.eyebrow": "从设置到成功",
-  "tut.title.line1": "操作演示视频。",
-  "tut.title.line2": "端到端的设置流程。",
+  "tut.eyebrow": "从设置到首笔交易",
+  "tut.title.line1": "设置您的全自动\n交易",
+  "tut.title.line2": "仅需 4 个简单步骤",
 
   // Leaders
   "leaders.eyebrow": "实时排行榜",
 
   // Insights
   "insights.eyebrow": "洞察、新闻与市场动态",
-  "insights.title.line1": "发现趋势。",
-  "insights.title.line2": "从数据中学习,保持领先。",
+  "insights.title.line1": "发现趋势",
+  "insights.title.line2": "从数据中学习,保持领先",
   "insights.lede":
-    "CoinTech2u 团队的研究笔记、市场简报与产品更新。",
+    "CoinTech2u 团队的研究笔记、市场简报与产品更新",
   "insights.rail.title": "最新市场动态",
   "insights.announcements.eyebrow": "最新公告",
 
   // AppDownload
   "app.eyebrow": "移动应用",
   "app.title.line1": "随时随地",
-  "app.title.line2": "交易。",
+  "app.title.line2": "交易",
 
   // FAQ
   "faq.eyebrow": "常见问题",
   "faq.title.line1": "问题,",
-  "faq.title.line2": "简明解答。",
-  "faq.lede": "关于策略、安全、设置与表现的即时解答。",
+  "faq.title.line2": "简明解答",
+  "faq.lede": "关于策略、安全、设置与表现的即时解答",
 
   // Contact
   "contact.eyebrow": "联系我们",
   "contact.title.line1": "让我们连接",
-  "contact.title.line2": "共同成长。",
-  "contact.lede": "留下您的联系方式 —— 我们的团队会主动联系您。",
+  "contact.title.line2": "共同成长",
+  "contact.lede": "留下您的联系方式 —— 我们的团队会主动联系您",
 
   // Archive
   "arch.news.eyebrow": "新闻与市场动态",
   "arch.news.title.line1": "加密货币新闻,",
-  "arch.news.title.line2": "为您简报。",
+  "arch.news.title.line2": "为您简报",
   "arch.news.lede":
     "精选阅读 —— 上线、监管、宏观信号,以及行情背后的趋势。",
   "arch.ann.eyebrow": "公告",
@@ -507,30 +553,50 @@ const zhTW: Dict = {
   "hero.title.line2.lead": "而非",
   "hero.title.line2.emph": "情緒",
   "hero.subtitle.pre":
-    "憑藉 AI 驅動的精準、即時分析與可驗證的洞察,在每一次市場波動中保持領先 —— 服務於",
-  "hero.subtitle.countries": "100+ 個國家",
-  "hero.subtitle.post": "的交易者。",
+    "CoinTech2u 是一個 AI 驅動的加密交易平台,在",
+  "hero.subtitle.countries": "您自己的交易所帳戶",
+  "hero.subtitle.post": "上運行自動化策略",
   "hero.cta.viewLive": "查看即時績效",
   "hero.experience.title": "立即體驗",
   "hero.experience.getStarted": "立即開始",
 
   // CoreStrengths cards
-  "core.card.custody.eyebrow": "資金託管",
+  "core.card.custody.eyebrow": "盈利防護",
   "core.card.custody.unit": "歸您所有",
-  "core.card.custody.caption": "資金保留在您的交易所。零第三方託管。",
-  "core.card.ai.eyebrow": "AI 引擎",
-  "core.card.ai.caption": "自適應智慧在每個波動週期中重新校準。",
-  "core.card.live2022.eyebrow": "自 2022 年運行",
+  "core.card.custody.caption": "您的利潤很重要",
+  "core.card.ai.eyebrow": "資產保護",
+  "core.card.ai.caption": "為保護您的投資組合淨值而設計",
+  "core.card.live2022.eyebrow": "零託管風險",
   "core.card.live2022.unit": "天",
-  "core.card.live2022.caption": "經審計的即時績效,每項指標均來自生產。",
-  "core.card.latency.eyebrow": "P95 延遲",
+  "core.card.live2022.caption": "您的資金始終不離開您自己的交易所帳戶",
+  "core.card.latency.eyebrow": "AI 智慧",
   "core.card.latency.unit": "毫秒",
-  "core.card.latency.caption": "覆蓋 OKX、Bitget、Bybit、Binance —— 即時執行。",
+  "core.card.latency.caption": "永不停止學習的自適應 AI",
   "core.card.always.eyebrow": "全天候運行",
-  "core.card.always.caption": "持續市場覆蓋。引擎永不停歇。",
-  "core.card.discipline.eyebrow": "紀律性",
+  "core.card.always.caption": "持續市場覆蓋。引擎永不停歇",
+  "core.card.discipline.eyebrow": "經驗證的成果",
   "core.card.discipline.caption":
-    "倉位規模、回撤限制、曝險上限 —— 由代碼定義,而非情緒。",
+    "經可驗證資料支持的 98% 持續勝率",
+  "core.card.custody.body":
+    "盈利防護是一項智能自動化風險管理功能,幫助交易者在保持穩定交易資金的同時鎖定利潤。一旦您的投資組合達到預設的淨值目標,系統會自動將淨利潤從交易錢包轉移到資金錢包,防止過度曝險、過度複利和不必要的市場風險。作為 CoinTech2u 3.0 的核心功能之一,盈利防護旨在通過保護已實現收益、同時讓策略繼續高效運行,來提升長期交易的可持續性",
+  "core.card.ai.body":
+    "資產保護是一項高級的投資組合層級風險管理功能,旨在極端市場波動期間保護您的資金。通過設定預設的淨值止損水平,一旦您的投資組合淨值跌破風險閾值,系統會自動平掉所有未平倉頭寸並停止交易,防止進一步虧損和失控的回撤。作為 CoinTech2u 3.0 的核心保護機制之一,資產保護幫助交易者保全資金、保持有紀律的風險管理,並確保長期交易的可持續性。",
+  "core.card.live2022.body":
+    "CoinTech2u 透過唯讀和僅交易的 API 連接到您的帳戶 —— 它可以分析市場並下單交易,但無法從您的交易所提取任何資金。提幣權限按設計被拒絕。資產由交易所託管;您持有密鑰,讓 CoinTech2u 為您處理交易和盈利。",
+  "core.card.latency.body":
+    "執行引擎全天候分析市場波動、訂單簿深度和價格行為 —— 即時調整入場、出場和倉位規模,以匹配市場條件。基於四年實盤交易資料訓練,並持續再訓練。",
+  "core.card.discipline.body":
+    "基於可驗證的交易資料和真實用戶表現 —— CoinTech2u 的 AI 策略已實現持續 98% 的勝率,為遍佈 100 多個國家的用戶帶來穩定且可持續的利潤。",
+  "core.hl.1.title": "資產保護",
+  "core.hl.1.sub": "資本保障",
+  "core.hl.2.title": "盈利防護",
+  "core.hl.2.sub": "鎖定交易利潤",
+  "core.hl.3.title": "零託管風險",
+  "core.hl.3.sub": "資金始終歸您所有",
+  "core.hl.4.title": "AI 智慧",
+  "core.hl.4.sub": "自適應 AI 持續運行",
+  "core.hl.5.title": "經驗證的成果",
+  "core.hl.5.sub": "勝率",
 
   // Nav
   "nav.liveTrading": "即時交易",
@@ -556,8 +622,8 @@ const zhTW: Dict = {
 
   // LivePerformance
   "livePerf.eyebrow": "即時交易",
-  "livePerf.title.line1": "真實帳戶。",
-  "livePerf.title.line2": "即時的真實績效。",
+  "livePerf.title.line1": "即時帳戶,即時資料",
+  "livePerf.title.line2": "此儀表板上的所有內容均為來自活躍 Cointech2u 帳戶的即時資料,而非行銷模擬。隨時重新載入頁面即可看到數字變動",
   "livePerf.counter.days": "天",
   "livePerf.counter.hours": "小時",
   "livePerf.counter.minutes": "分鐘",
@@ -569,10 +635,10 @@ const zhTW: Dict = {
   "livePerf.guard.profit.desc": "隨著倉位增長自動鎖定利潤。",
 
   // Leaders
-  "leaders.title.line1": "真實交易者。",
-  "leaders.title.line2": "真實利潤。",
+  "leaders.title.line1": "真實交易者。真實利潤",
+  "leaders.title.line2": "真實利潤",
   "leaders.lede":
-    "CoinTech2u 網絡中的即時利潤排行。在今日、本月與全部時間之間滑動查看誰領先。",
+    "CoinTech2u 網絡中的即時利潤排行",
   "leaders.tab.today": "今日",
   "leaders.tab.today.sub": "24 小時利潤",
   "leaders.tab.monthly": "本月",
@@ -678,52 +744,54 @@ const zhTW: Dict = {
 
   // Partners
   "partners.eyebrow": "官方合作夥伴",
-  "partners.title.line1": "連接全球",
-  "partners.title.line2": "領先交易所。",
+  "partners.title.line1": "連接領先\n交易所",
+  "partners.title.line2": "領先交易所",
+  "partners.subtitle.line1": "透過安全 API 連接,資金始終保留在您的交易所",
+  "partners.subtitle.line2": "您的資金,您來掌控。",
 
   // CoreStrengths
-  "core.eyebrow": "核心優勢",
-  "core.title.line1": "AI 驅動的洞察。",
-  "core.title.line2": "智慧分析,可驗證的成果。",
+  "core.eyebrow": "核心功能",
+  "core.title.line1": "開始使用 CoinTech2u 的理由",
+  "core.title.line2": "每位 CoinTech2u 用戶從第一天起就擁有的五項核心能力",
 
   // Tutorials
-  "tut.eyebrow": "從設定到成功",
-  "tut.title.line1": "操作示範影片。",
-  "tut.title.line2": "端到端的設定流程。",
+  "tut.eyebrow": "從設定到首筆交易",
+  "tut.title.line1": "設定您的全自動\n交易",
+  "tut.title.line2": "僅需 4 個簡單步驟",
 
   // Leaders
   "leaders.eyebrow": "即時排行榜",
 
   // Insights
   "insights.eyebrow": "洞察、新聞與市場動態",
-  "insights.title.line1": "發現趨勢。",
-  "insights.title.line2": "從數據中學習,保持領先。",
+  "insights.title.line1": "發現趨勢",
+  "insights.title.line2": "從數據中學習,保持領先",
   "insights.lede":
-    "CoinTech2u 團隊的研究筆記、市場簡報與產品更新。",
+    "CoinTech2u 團隊的研究筆記、市場簡報與產品更新",
   "insights.rail.title": "最新市場動態",
   "insights.announcements.eyebrow": "最新公告",
 
   // AppDownload
   "app.eyebrow": "行動應用程式",
   "app.title.line1": "隨時隨地",
-  "app.title.line2": "交易。",
+  "app.title.line2": "交易",
 
   // FAQ
   "faq.eyebrow": "常見問題",
   "faq.title.line1": "問題,",
-  "faq.title.line2": "簡明解答。",
-  "faq.lede": "關於策略、安全、設定與績效的即時解答。",
+  "faq.title.line2": "簡明解答",
+  "faq.lede": "關於策略、安全、設定與績效的即時解答",
 
   // Contact
   "contact.eyebrow": "聯絡我們",
   "contact.title.line1": "讓我們連結",
-  "contact.title.line2": "共同成長。",
-  "contact.lede": "留下您的聯絡方式 —— 我們的團隊會主動聯繫您。",
+  "contact.title.line2": "共同成長",
+  "contact.lede": "留下您的聯絡方式 —— 我們的團隊會主動聯繫您",
 
   // Archive
   "arch.news.eyebrow": "新聞與市場動態",
   "arch.news.title.line1": "加密貨幣新聞,",
-  "arch.news.title.line2": "為您簡報。",
+  "arch.news.title.line2": "為您簡報",
   "arch.news.lede":
     "精選閱讀 —— 上架、監管、總經訊號,以及行情背後的趨勢。",
   "arch.ann.eyebrow": "公告",

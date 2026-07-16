@@ -1,6 +1,5 @@
 import Nav from "./components/Nav";
 import Hero from "./components/Hero";
-import LivePerformance from "./components/LivePerformance";
 import Partners from "./components/Partners";
 import CoreStrengths from "./components/CoreStrengths";
 import Tutorials from "./components/Tutorials";
@@ -9,7 +8,6 @@ import Insights from "./components/Insights";
 import AppDownload from "./components/AppDownload";
 import FAQ from "./components/FAQ";
 import Contact from "./components/Contact";
-import FinalCTA from "./components/FinalCTA";
 import Footer from "./components/Footer";
 // Canonical English Q&A for SEO JSON-LD. The page-level FAQ renders via the
 // i18n hook (so it swaps language with the rest of the page), but JSON-LD is
@@ -62,7 +60,7 @@ export default function HomePage() {
       <Nav />
       <main>
         <Hero />
-        <LivePerformance />
+        {/* <LivePerformance /> hidden */}
         <Partners />
         <CoreStrengths />
         <Tutorials />

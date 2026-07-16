@@ -68,8 +68,7 @@ export default function Insights({ accent = ACCENT }: { accent?: string }) {
             <p
               style={{
                 fontSize: 12,
-                letterSpacing: "0.18em",
-                textTransform: "uppercase",
+                letterSpacing: "0.06em",
                 color: accent,
                 margin: 0,
                 marginBottom: 22,
@@ -235,37 +234,6 @@ export default function Insights({ accent = ACCENT }: { accent?: string }) {
               ))}
             </div>
           </div>
-        </div>
-
-        <div
-          style={{
-            display: "flex",
-            flexWrap: "wrap",
-            gap: 8,
-            paddingTop: 16,
-            borderTop: "1px solid var(--line)",
-          }}
-        >
-          {["All", "Market briefings", "Product updates", "Research", "Partners", "Tutorials"].map(
-            (c, i) => (
-              <span
-                key={c}
-                style={{
-                  padding: "6px 12px",
-                  borderRadius: 99,
-                  fontSize: 12,
-                  color: i === 0 ? accent : "var(--text-2)",
-                  background: i === 0 ? "rgba(227,81,238,0.06)" : "transparent",
-                  border:
-                    i === 0
-                      ? "1px solid rgba(227,81,238,0.25)"
-                      : "1px solid var(--line)",
-                }}
-              >
-                {c}
-              </span>
-            ),
-          )}
         </div>
 
         <AnnouncementsRow accent={accent} />

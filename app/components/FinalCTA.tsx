@@ -43,8 +43,7 @@ export default function FinalCTA({ accent = ACCENT }: { accent?: string }) {
           className="mono"
           style={{
             fontSize: 12,
-            letterSpacing: "0.18em",
-            textTransform: "uppercase",
+            letterSpacing: "0.06em",
             color: accent,
             marginBottom: 24,
           }}
