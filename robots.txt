@@ -1,0 +1,5 @@
+User-Agent: *
+Allow: /
+
+Host: https://www.cointech2u.com
+Sitemap: https://www.cointech2u.com/sitemap.xml
