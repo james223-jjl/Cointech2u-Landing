@@ -103,23 +103,29 @@ p[style*="letter-spacing:0.06em;color:#E351EE"]{display:none!important}
 .ct2u-app-ann-eyebrow{font-size:clamp(34px,4vw,52px)!important;letter-spacing:-.025em!important;font-weight:600!important;line-height:1.1;background:linear-gradient(100deg,#FFFFFF,#FFFFFF 22%,#7C7CFF 42%,#E351EE 50%,#7C7CFF 58%,#FFFFFF 78%,#FFFFFF);background-size:200% 100%;background-position:0 50%;-webkit-background-clip:text;background-clip:text;color:transparent!important;animation:ct2u-aurora 14s linear infinite;filter:drop-shadow(0 2px 14px rgba(5,5,7,.9)) drop-shadow(0 0 24px #E351EE28)}
 .ct2u-app-ann-eyebrow>span[aria-hidden]{display:none!important}
 .ct2u-app-ann-header{align-items:flex-end!important}
-.ct2u-app-ann-grid{display:flex;flex-direction:column;gap:0}
-.ct2u-app-ann-card{position:relative;flex-direction:row;align-items:center;gap:22px;border:0;border-radius:0;background:transparent;padding:16px 8px;overflow:visible}
-.ct2u-app-ann-card+.ct2u-app-ann-card{border-top:1px solid rgba(255,255,255,.08)}
+.ct2u-app-ann-grid{display:flex;flex-direction:column;gap:0;border:1px solid rgba(255,255,255,.09);border-radius:16px;background:#0a0a0d;padding:4px 18px}
+.ct2u-app-ann-card{position:relative;flex-direction:row;align-items:center;gap:16px;border:0;border-radius:0;background:transparent;padding:12px 2px;overflow:visible}
+.ct2u-app-ann-card+.ct2u-app-ann-card{border-top:1px solid rgba(255,255,255,.07)}
 .ct2u-app-ann-card:hover{transform:none;background:rgba(227,81,238,.045);box-shadow:none}
-.ct2u-app-ann-card:before{content:"";position:absolute;left:0;top:20%;bottom:20%;width:2px;background:#E351EE;box-shadow:0 0 10px #E351EE;opacity:0;transition:opacity .3s ease}
+.ct2u-app-ann-card:before{content:"";position:absolute;left:-18px;top:22%;bottom:22%;width:2px;background:#E351EE;box-shadow:0 0 10px #E351EE;opacity:0;transition:opacity .3s ease}
 .ct2u-app-ann-card:hover:before{opacity:1}
-.ct2u-app-ann-media{width:168px;min-width:168px;aspect-ratio:16/10;border-radius:10px;border:1px solid rgba(255,255,255,.08)}
+.ct2u-app-ann-media{width:92px;min-width:92px;aspect-ratio:16/10;border-radius:8px;border:1px solid rgba(255,255,255,.08)}
 .ct2u-app-ann-media img{transition:transform .5s cubic-bezier(.22,.61,.36,1)}
 .ct2u-app-ann-card:hover .ct2u-app-ann-media img{transform:scale(1.07)}
-.ct2u-app-ann-body{padding:0;flex:1}
-.ct2u-ann-gen{padding:10px 12px;gap:3px}
-.ct2u-ann-gen b{font-size:10px;line-height:1.2;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;max-width:88%}
+.ct2u-app-ann-body{padding:0;flex:1;min-width:0}
+.ct2u-app-ann-row{margin-bottom:2px}
+.ct2u-app-ann-title{font-size:13.5px;-webkit-line-clamp:1}
+.ct2u-app-ann-sub{font-size:12px;margin-bottom:4px;-webkit-line-clamp:1}
+.ct2u-app-ann-date{font-size:10px}
+.ct2u-app-ann-arrow{width:24px;height:24px}
+.ct2u-app-ann-arrow svg{width:12px;height:12px}
+.ct2u-ann-gen{padding:8px;gap:0;align-items:center;justify-content:center}
+.ct2u-ann-gen b{display:none}
 .ct2u-ann-gen em{display:none}
-.ct2u-ann-gen .lg{width:16px;height:16px;top:7px;left:10px}
-.ct2u-ann-gen:before{width:60px;height:60px;right:-18px;bottom:-24px}
-.ct2u-ann-gen:after{right:8px;bottom:26px;width:5px;height:5px}
-@media (max-width:700px){.ct2u-app-ann-card{gap:14px;padding:13px 4px}.ct2u-app-ann-media{width:118px;min-width:118px}.ct2u-app-ann-title{font-size:14px}}
+.ct2u-ann-gen .lg{position:static;width:30px;height:30px}
+.ct2u-ann-gen:before{width:40px;height:40px;right:-12px;bottom:-16px}
+.ct2u-ann-gen:after{right:6px;bottom:16px;width:4px;height:4px}
+@media (max-width:700px){.ct2u-app-ann-grid{padding:2px 12px}.ct2u-app-ann-card{gap:12px;padding:11px 2px}.ct2u-app-ann-media{width:80px;min-width:80px}.ct2u-app-ann-card:before{left:-12px}}
 .ct2u-app-ann-media{position:relative}
 .ct2u-ann-gen{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;gap:8px;padding:20px 22px;overflow:hidden;background:radial-gradient(95% 130% at 88% -12%,rgba(124,124,255,.30),transparent 60%),radial-gradient(120% 150% at 8% 112%,rgba(227,81,238,.32),transparent 62%),#0b0a10}
 .ct2u-ann-gen:before{content:"";position:absolute;right:-34px;bottom:-46px;width:130px;height:130px;border-radius:50%;border:1.5px dotted rgba(255,255,255,.28)}
