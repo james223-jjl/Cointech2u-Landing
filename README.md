@@ -1,47 +1,37 @@
-# CoinTech2u — Static HTML Version
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-This folder is a **complete, independent static website** — the exact HTML/CSS/JS
-export of the Next.js project in the parent directory.
+## Getting Started
 
-- **Source of truth:** the Next.js app (`../app`, `../public`). This folder is
-  generated from it and should not be edited by hand — regenerate instead.
-- **Visual fidelity:** identical to the Next.js site. Same stylesheets
-  (gradients, glassmorphism, glow, blur, layered backgrounds) and same
-  JavaScript (nav scroll behavior, scroll reveals, language switcher,
-  particle/canvas effects).
-
-## Pages
-
-| Page          | File                              |
-| ------------- | --------------------------------- |
-| Home          | `index.html`                      |
-| News          | `news/index.html`                 |
-| News article  | `news/article/index.html`         |
-| Announcements | `announcements/index.html`        |
-| Announcement  | `announcements/article/index.html`|
-| 404           | `404.html`                        |
-
-Assets: `_next/` (CSS + JS bundles), `videos/`, `icons/`, `logos/`, `strengths/`.
-
-## Run it locally
+First, run the development server:
 
 ```bash
-npx serve . -l 3001
-# open http://localhost:3001
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
 ```
 
-(Any static file server works. Avoid opening index.html via file:// — asset
-paths are root-relative and need a server.)
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-## Host it
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-Upload this folder's contents to any static host (Cloudflare Pages, Netlify,
-S3, GitHub Pages, any web server). No Node.js needed at runtime.
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-## Regenerate after changing the Next.js app
+## Learn More
 
-```bash
-cd ..
-npm run build            # stop `npm run dev` first
-rm -rf html-version && mkdir html-version && cp -R out/. html-version/
-```
+To learn more about Next.js, take a look at the following resources:
+
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+
+## Deploy on Vercel
+
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+# Cointech2u-Landing
