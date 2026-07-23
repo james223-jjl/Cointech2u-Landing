@@ -80,6 +80,10 @@
 .ct2u-why-spec i{position:absolute;top:50%;left:7%;width:11px;height:11px;border-radius:50%;background:#fff;transform:translate(-50%,-50%);box-shadow:0 0 12px #E351EE;transition:left 1.1s cubic-bezier(.22,.61,.36,1)}
 .ct2u-why-panel:hover .ct2u-why-spec i{left:93%}
 .ct2u-why-spec-lab{display:flex;justify-content:space-between;margin-top:9px;font-family:var(--font-jetbrains-mono),system-ui,sans-serif;font-size:9px;letter-spacing:.12em;color:#7f7f8a;text-transform:uppercase;position:relative;z-index:1}
+.ct2u-why-link{display:inline-flex;align-items:center;gap:6px;margin-top:16px;font-size:12.5px;color:#a9a9b6;text-decoration:none;position:relative;z-index:1;width:fit-content;transition:color .3s ease}
+.ct2u-why-link span{display:inline-block;transition:transform .3s ease}
+.ct2u-why-link:hover{color:#E351EE}
+.ct2u-why-link:hover span{transform:translateX(4px)}
 .ct2u-why-streaks{position:absolute;right:5%;top:18%;width:40%;height:48%;pointer-events:none;overflow:hidden}
 .ct2u-why-streaks i{position:absolute;left:-40%;height:2px;width:55%;border-radius:2px;background:linear-gradient(90deg,transparent,#7C7CFF,transparent);animation:ct2u-streak 2.6s linear infinite}
 .ct2u-why-perm{margin-top:22px;position:relative;z-index:1;font-family:var(--font-jetbrains-mono),system-ui,sans-serif;border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:14px 16px 6px;background:rgba(255,255,255,.02);max-width:360px}
@@ -468,7 +472,8 @@ trading<br/><span style="color:var(--text-2);font-style:italic;font-weight:400;f
         '6','strategies','',
         chips(['Extreme','Bull Extreme','Bear Extreme','Bull AI','AI Strategy','Multiplication'])+
         '<div class="ct2u-why-spec"><i></i></div>'+
-        '<div class="ct2u-why-spec-lab"><span>Conservative</span><span>Aggressive</span></div>')+
+        '<div class="ct2u-why-spec-lab"><span>Conservative</span><span>Aggressive</span></div>'+
+        '<a class="ct2u-why-link" href="https://app.cointech2u.com/h5/en/strategy-center" target="_blank" rel="noopener noreferrer">Read more here <span>→</span></a>')+
       panel('w2','Beyond Crypto',
         'Crypto, TradFi and Commodities under one engine — a single, unified automated trading experience across markets.',
         '3','markets',
