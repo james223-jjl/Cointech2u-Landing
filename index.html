@@ -220,8 +220,16 @@ trading<br/><span style="color:var(--text-2);font-style:italic;font-weight:400;f
   // start the hero video download immediately, in parallel with page load.
   // Range-capable host (e.g. Cloudflare): stream directly = fast first frame.
   // No ranges (basic dev server): that same probe response becomes the blob.
+  var IOS=/iP(hone|od|ad)/.test(navigator.userAgent)||
+          (navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
   var vidReady=fetch(VIDEO_SRC,{headers:{'Range':'bytes=0-1'}}).then(function(r){
-    if(r.status===206){try{r.body&&r.body.cancel&&r.body.cancel();}catch(e){}return null;}
+    if(r.status===206){
+      try{r.body&&r.body.cancel&&r.body.cancel();}catch(e){}
+      if(!IOS)return null;                       // stream directly via ranges
+      // iOS never buffers video data before playback: download fully instead
+      return fetch(VIDEO_SRC).then(function(r2){return r2.blob();})
+        .then(function(b){return URL.createObjectURL(b);});
+    }
     return r.blob().then(function(b){return URL.createObjectURL(b);});
   }).catch(function(){return null;});
   function initTextWall(){
@@ -844,6 +852,9 @@ trading<br/><span style="color:var(--text-2);font-style:italic;font-weight:400;f
     }
     var dur=0;
     video.addEventListener('loadedmetadata',function(){dur=video.duration;});
+    video.addEventListener('loadeddata',function(){          // force first-frame paint on mobile
+      if(video.currentTime===0){try{video.currentTime=0.001;}catch(e){}}
+    });
     vidReady.then(function(u){video.src=u||VIDEO_SRC;});
     var target=0,current=-1;
     function measure(){
