@@ -225,16 +225,17 @@ trading<br/><span style="color:var(--text-2);font-style:italic;font-weight:400;f
   // No ranges (basic dev server): that same probe response becomes the blob.
   var IOS=/iP(hone|od|ad)/.test(navigator.userAgent)||
           (navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
-  var vidReady=fetch(VIDEO_SRC,{headers:{'Range':'bytes=0-1'}}).then(function(r){
+  function fullBlob(bust){
+    return fetch(bust?VIDEO_SRC+'?r='+bust:VIDEO_SRC,{cache:bust?'reload':'default'})
+      .then(function(r){return r.blob();}).then(function(b){return URL.createObjectURL(b);});
+  }
+  var vidReady=fetch(VIDEO_SRC,{headers:{'Range':'bytes=0-1'},cache:'no-store'}).then(function(r){
     if(r.status===206){
       try{r.body&&r.body.cancel&&r.body.cancel();}catch(e){}
-      if(!IOS)return null;                       // stream directly via ranges
-      // iOS never buffers video data before playback: download fully instead
-      return fetch(VIDEO_SRC).then(function(r2){return r2.blob();})
-        .then(function(b){return URL.createObjectURL(b);});
+      return IOS?fullBlob():null;                // iOS never buffers pre-play: full download
     }
     return r.blob().then(function(b){return URL.createObjectURL(b);});
-  }).catch(function(){return null;});
+  }).catch(function(){return fullBlob().catch(function(){return null;});});
   function initTextWall(){
     // decode-wall background (contentarchitecture.dev style): dim tiled brand
     // phrases in mono, the bot mark as brighter cells, ambient corruption,
@@ -754,7 +755,7 @@ trading<br/><span style="color:var(--text-2);font-style:italic;font-weight:400;f
     sec.className='ct2u-scrub-hero';
     sec.innerHTML=
       '<div class="ct2u-scrub-sticky">'+
-        '<video class="ct2u-scrub-video" muted playsinline preload="auto" aria-hidden="true"></video>'+
+        '<video class="ct2u-scrub-video" muted playsinline preload="auto" poster="/videos/hero-poster.jpg" aria-hidden="true"></video>'+
         '<div class="ct2u-scrub-fade"></div><div class="ct2u-scrub-veil"></div>'+
         '<div class="ct2u-scrub-overlay"><h1 class="ct2u-scrub-title ct2u-aurora-text">Experience the future of Trading</h1></div>'+
         '<div class="ct2u-scrub-cta-wrap"><a class="ct2u-scrub-cta" href="#our-partner">Read more <span class="arr">\u2192</span></a></div>'+
@@ -859,6 +860,13 @@ trading<br/><span style="color:var(--text-2);font-style:italic;font-weight:400;f
       if(video.currentTime===0){try{video.currentTime=0.001;}catch(e){}}
     });
     vidReady.then(function(u){video.src=u||VIDEO_SRC;});
+    // watchdog: if no frame ever decodes (flaky mobile cache/reload), retry
+    // once with a cache-busted full download; the poster covers the wait
+    setTimeout(function(){
+      if(video.videoWidth===0){
+        fullBlob(String((new Date()).getTime())).then(function(u){video.src=u;}).catch(function(){});
+      }
+    },5000);
     var target=0,current=-1;
     function measure(){
       var total=sec.offsetHeight-window.innerHeight;
